@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuantumMet — Quantum Computing for Metallurgical & Materials Engineering</title>
+<!-- 1. Include the MathJax library -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async 
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<style>
+/* ============ tokens ============ */
+:root{
+  --paper:#f7f4ec; --paper2:#efe9dc; --paper3:#e7dfcd;
+  --ink:#242b32; --ink2:#5c6670; --ink3:#8b939b;
+  --hair:#d9d1be; --hair2:#c7bda6;
+  --steel:#2f6383; --steel2:#3f7ba0; --steel-soft:rgba(47,99,131,.10);
+  --gold:#a5791f; --gold2:#c2952b; --gold-soft:rgba(165,121,31,.12);
+  --err:#a3523d;
+  --code-bg:#0f1a22; --code-bg2:#0b141b; --code-line:#1e2b36;
+  --shadow:0 2px 12px rgba(36,43,50,.08);
+  --head-h:58px;
+}
+[data-theme="dim"]{
+  --paper:#161b21; --paper2:#1c232b; --paper3:#232c36;
+  --ink:#d6dce2; --ink2:#9aa5af; --ink3:#6e7984;
+  --hair:#2b343d; --hair2:#3a4650;
+  --steel:#7cb1d2; --steel2:#a3c9e2; --steel-soft:rgba(124,177,210,.12);
+  --gold:#d2a54a; --gold2:#e2bb60; --gold-soft:rgba(210,165,74,.13);
+  --err:#d98a75;
+  --shadow:0 2px 14px rgba(0,0,0,.4);
+}
+/* ============ base ============ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;font-size:17px;line-height:1.68;-webkit-font-smoothing:antialiased}
+.mono,.mono *{font-family:'IBM Plex Mono',Consolas,monospace}
+a{color:var(--steel);text-decoration:none}
+a:hover{color:var(--steel2)}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.wrap{max-width:1150px;margin:0 auto;padding:0 30px}
+h1,h2,h3{font-family:'Source Serif 4',Georgia,serif;font-weight:600;line-height:1.15;margin:0}
+p{margin:0 0 1.1em}
+em{font-style:italic}
+.accent{color:var(--gold);font-style:italic}
+.ic{vertical-align:-2px;flex:none}
+::selection{background:var(--gold-soft)}
+.kick{font:600 11px/1 'IBM Plex Mono';letter-spacing:.16em;color:var(--steel);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.kick::before{content:"";width:22px;height:1.5px;background:var(--gold)}
+.katex-display{margin:1.1em 0}
+.katex{font-size:1.04em}
+/* ============ header ============ */
+#site-head{position:sticky;top:0;z-index:90;height:var(--head-h);background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair)}
+#site-head .wrap{height:100%;display:flex;align-items:center;gap:26px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--steel)}
+.brand small{font:400 10px 'IBM Plex Mono';color:var(--ink3);letter-spacing:.12em;margin-top:6px}
+.nav{display:flex;gap:20px;margin-left:8px}
+.nav a{font:500 11.5px 'IBM Plex Mono';letter-spacing:.09em;color:var(--ink2);padding:6px 2px;border-bottom:2px solid transparent}
+.nav a:hover{color:var(--steel)}
+.nav a.on{color:var(--steel);border-bottom-color:var(--gold)}
+.head-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.chip{display:inline-flex;align-items:center;gap:7px;font:500 10.5px 'IBM Plex Mono';letter-spacing:.08em;color:var(--ink2);border:1px solid var(--hair);padding:6px 10px;border-radius:2px;cursor:pointer}
+.chip:hover{border-color:var(--steel);color:var(--steel)}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.tbtn{width:34px;height:34px;border:1px solid var(--hair);border-radius:2px;display:grid;place-items:center;color:var(--ink2)}
+.tbtn:hover{border-color:var(--steel);color:var(--steel)}
+#ch-progress{position:fixed;top:var(--head-h);left:0;height:2px;background:var(--gold);width:0;z-index:89;transition:width .15s linear;display:none}
+/* ============ buttons / badges ============ */
+.btn{display:inline-flex;align-items:center;gap:9px;font:500 11.5px/1 'IBM Plex Mono';letter-spacing:.09em;padding:12px 19px;border:1px solid var(--steel);color:var(--steel);border-radius:2px;transition:all .18s;background:transparent}
+.btn:hover{background:var(--steel-soft);transform:translateY(-1px)}
+.btn-solid{background:var(--steel);color:var(--paper)}
+.btn-solid:hover{background:var(--steel2);color:var(--paper)}
+.btn-gold{border-color:var(--gold);color:var(--gold)}
+.btn-gold:hover{background:var(--gold-soft)}
+.btn[disabled]{opacity:.55;cursor:default;transform:none!important}
+.badge{display:inline-block;font:600 9px 'IBM Plex Mono';letter-spacing:.13em;padding:4px 8px;border:1px solid;border-radius:2px;white-space:nowrap}
+.b-free{color:var(--steel);border-color:var(--steel)}
+.b-need{color:var(--gold);border-color:var(--gold)}
+.b-cap{color:var(--paper);border-color:var(--steel);background:var(--steel)}
+/* ============ lattice band divider ============ */
+.latband{height:28px;margin:44px 0;color:var(--steel);opacity:.26;overflow:hidden}
+.latband.tight{margin:14px 0 34px}
+.latband svg{display:block;width:100%;height:28px}
+/* ============ hero ============ */
+.hero{padding:76px 0 26px;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,4.6vw,3.5rem);letter-spacing:-.015em;margin:20px 0 22px}
+.hero .sub{font-size:18.5px;color:var(--ink2);max-width:56ch;margin-bottom:30px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.hero .meta-line{margin-top:26px;font:400 10.5px 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink3)}
+.hero-lat{position:relative}
+.hero-lat canvas{width:100%;height:290px;display:block}
+.hero-lat .cap{font:400 10px 'IBM Plex Mono';letter-spacing:.06em;color:var(--ink3);margin-top:8px;line-height:1.7}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;animation:pl 2.2s infinite}
+@keyframes pl{0%,100%{box-shadow:0 0 0 0 var(--gold-soft)}50%{box-shadow:0 0 0 6px transparent}}
+/* ============ this week ============ */
+.sec{padding:14px 0 6px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:6px}
+.sec-head h2{font-size:24px}
+.week-row{display:flex;align-items:center;gap:18px;padding:17px 6px;border-bottom:1px solid var(--hair);transition:background .15s}
+.week-row:first-of-type{border-top:1px solid var(--hair)}
+.week-row:hover{background:var(--paper2)}
+.week-row .wk-tag{font:600 9.5px 'IBM Plex Mono';letter-spacing:.12em;color:var(--steel);border:1px solid var(--steel);padding:4px 8px;border-radius:2px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.week-row .wk-tag.soon{color:var(--gold);border-color:var(--gold)}
+.week-row .wk-t{font-size:17.5px;font-weight:600}
+.week-row .wk-m{font:400 10.5px 'IBM Plex Mono';color:var(--ink3);letter-spacing:.05em;margin-left:auto;white-space:nowrap}
+/* ============ library ============ */
+.feat{border:1px solid var(--hair2);background:var(--paper2);padding:30px 32px;margin:16px 0 8px;border-radius:3px;display:grid;grid-template-columns:1fr auto;gap:26px;align-items:center;transition:border-color .2s}
+.feat:hover{border-color:var(--steel)}
+.feat h3{font-size:26px;margin:10px 0 8px}
+.feat .fd{color:var(--ink2);font-size:16px;max-width:62ch}
+.feat .fm{font:400 10.5px 'IBM Plex Mono';color:var(--ink3);letter-spacing:.1em;margin-top:14px}
+.prog-track{height:3px;background:var(--hair);border-radius:2px;overflow:hidden;margin-top:12px;max-width:340px}
+.prog-fill{height:100%;background:var(--gold);transition:width .5s ease}
+.lib-row{display:flex;align-items:center;gap:20px;padding:21px 8px;border-bottom:1px solid var(--hair);transition:background .15s;cursor:pointer}
+.lib-row:hover{background:var(--paper2)}
+.lib-row .lr-num{font:400 11px 'IBM Plex Mono';color:var(--ink3);white-space:nowrap;letter-spacing:.1em}
+.lib-row .lr-main{min-width:0}
+.lib-row .lr-t{font-size:19.5px;font-weight:600}
+.lib-row .lr-m{font:400 10.5px 'IBM Plex Mono';color:var(--ink3);letter-spacing:.06em;margin-top:4px}
+.lib-row .lr-bar{margin-left:auto;display:flex;align-items:center;gap:12px;white-space:nowrap}
+.mini-track{width:120px;height:3px;background:var(--hair)}
+.mini-fill{height:100%;background:var(--gold)}
+.lr-pct{font:500 10.5px 'IBM Plex Mono';color:var(--ink2);width:34px;text-align:right}
+/* node lattice rows */
+.nodes-row{display:flex;align-items:center;flex-wrap:wrap;gap:0;padding-top:16px;max-width:280px}
+.lnode{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--hair2);display:grid;place-items:center;font:500 10px 'IBM Plex Mono';color:var(--ink3);flex:none;transition:all .2s}
+.llink{width:18px;height:1.5px;background:var(--hair2);flex:none}
+.lnode.done{border-color:var(--gold);background:var(--gold-soft);color:var(--gold)}
+.lnode.live{border-color:var(--steel);color:var(--steel);cursor:pointer}
+.lnode.live:hover{background:var(--steel-soft);transform:scale(1.12)}
+.lnode.locked{opacity:.75}
+/* ============ how-it-works ============ */
+.how-row{display:flex;gap:22px;padding:20px 6px;border-bottom:1px solid var(--hair);align-items:baseline}
+.how-row:first-of-type{border-top:1px solid var(--hair)}
+.how-row .hn{font:600 13px 'IBM Plex Mono';color:var(--gold);letter-spacing:.08em;white-space:nowrap}
+.how-row .ht{font-weight:600;font-size:17px}
+.how-row .hd{color:var(--ink2);font-size:15.5px;margin-top:3px;line-height:1.6}
+/* ============ series page ============ */
+.crumb{font:400 11px 'IBM Plex Mono';letter-spacing:.08em;color:var(--ink3);padding:34px 0 6px;display:inline-flex;gap:8px;align-items:center}
+.crumb:hover{color:var(--steel)}
+.s-hero{padding:12px 0 8px}
+.s-hero h1{font-size:clamp(1.9rem,3.4vw,2.7rem);margin:14px 0 12px}
+.s-hero .sd{color:var(--ink2);font-size:17px;max-width:66ch}
+.s-hero .sm{font:400 10.5px 'IBM Plex Mono';color:var(--ink3);letter-spacing:.1em;margin-top:16px}
+.s-prog{border:1px solid var(--hair);background:var(--paper2);padding:22px 26px;margin:26px 0 8px;border-radius:3px}
+.s-prog .sp-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.ch-row{display:flex;align-items:center;gap:20px;padding:19px 8px;border-bottom:1px solid var(--hair);transition:background .15s;cursor:pointer}
+.ch-row:first-of-type{border-top:1px solid var(--hair)}
+.ch-row:hover{background:var(--paper2)}
+.ch-row .ch-num{font:400 21px 'IBM Plex Mono';color:var(--ink3);width:44px;flex:none}
+.ch-row.done .ch-num{color:var(--gold)}
+.ch-row.live .ch-num{color:var(--steel)}
+.ch-row .ch-title{font-size:18.5px;font-weight:600}
+.ch-row .ch-meta{font:400 10px 'IBM Plex Mono';color:var(--ink3);letter-spacing:.07em;margin-top:5px}
+.ch-row .ch-st{margin-left:auto;flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%}
+.ch-row.done .ch-st{background:var(--gold-soft);color:var(--gold);border:1px solid var(--gold)}
+.ch-row.live .ch-st{color:var(--steel);border:1px solid var(--steel)}
+.ch-row.locked .ch-st{color:var(--ink3);border:1px solid var(--hair2)}
+.ch-row.locked{opacity:.82}
+/* ============ prereq map ============ */
+.map-scroll{overflow-x:auto;border:1px solid var(--hair);border-radius:3px;background:var(--paper2);margin-top:18px}
+.pmap{display:block;min-width:780px;width:100%;height:auto}
+.pmap text{font-family:'IBM Plex Mono';pointer-events:none}
+.pmap .mcourse rect{fill:var(--paper);stroke:var(--steel);stroke-width:1.1}
+.pmap .mcourse text{fill:var(--steel);font-size:9.5px;letter-spacing:.09em;font-weight:600}
+.pmap .mchap circle{fill:var(--paper);stroke:var(--steel);stroke-width:1.4}
+.pmap .mchap text{fill:var(--ink2);font-size:9.5px;letter-spacing:.04em}
+.pmap .mchap .num{fill:var(--steel);font-size:10px;font-weight:600}
+.pmap .mchap.done circle{stroke:var(--gold)}
+.pmap .mchap.done .num{fill:var(--gold)}
+.pmap .mchap.locked circle{stroke-dasharray:3 3;stroke:var(--hair2)}
+.pmap .mchap.locked text{fill:var(--ink3)}
+.pmap .mchap.live{cursor:pointer}
+.pmap .medge{fill:none;stroke:var(--steel);stroke-width:1.2;opacity:.30;transition:opacity .25s,stroke-width .25s}
+.pmap .mnode{cursor:grab}
+.pmap.focusing .medge{opacity:.06}
+.pmap.focusing .mchap circle,.pmap.focusing .mchap text{opacity:.25}
+.pmap.focusing .mcourse rect,.pmap.focusing .mcourse text{opacity:.25}
+.pmap.focusing .mnode.on circle,.pmap.focusing .mnode.on text,.pmap.focusing .mnode.on rect{opacity:1}
+.pmap.focusing .medge.on{opacity:1;stroke:var(--steel2);stroke-width:2}
+.map-leg{font:400 10px 'IBM Plex Mono';color:var(--ink3);letter-spacing:.07em;margin-top:10px}
+/* ============ chapter layout ============ */
+.ch-grid{display:grid;grid-template-columns:232px minmax(0,1fr);gap:52px;padding-top:6px}
+.ch-aside{position:sticky;top:calc(var(--head-h) + 26px);align-self:start;padding-bottom:20px}
+.toc-h{font:600 10px 'IBM Plex Mono';letter-spacing:.15em;color:var(--ink3);margin:20px 0 10px}
+.toc-h:first-child{margin-top:34px}
+.toc-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font:400 13px/1.5 'Source Serif 4';color:var(--ink2);padding:4px 0 4px 12px;border-left:2px solid var(--hair);transition:all .2s}
+.toc-item:hover{color:var(--steel)}
+.toc-item.on{color:var(--steel);border-left-color:var(--gold);font-weight:600}
+.toc-item .tdot{margin-left:auto;width:7px;height:7px;border-radius:50%;border:1px solid var(--hair2);flex:none;transition:all .3s}
+.toc-item.passed .tdot{background:var(--gold);border-color:var(--gold)}
+.side-check{list-style:none;margin:0;padding:0}
+.side-check li{display:flex;align-items:center;gap:9px;font:400 10.5px 'IBM Plex Mono';color:var(--ink2);padding:5px 0;letter-spacing:.04em}
+.side-check .box{width:12px;height:12px;border:1.5px solid var(--hair2);flex:none;display:grid;place-items:center;color:transparent;transition:all .3s}
+.side-check li.done{color:var(--ink)}
+.side-check li.done .box{background:var(--gold);border-color:var(--gold);color:var(--paper)}
+.side-note{font:400 9.5px 'IBM Plex Mono';letter-spacing:.1em;color:var(--ink3);margin-top:16px;line-height:1.8}
+.side-note b{color:var(--steel);font-weight:600}
+/* article */
+article.ch{max-width:710px;padding-bottom:70px}
+article.ch .lede{font-size:19.5px;color:var(--ink2);font-style:italic;line-height:1.7}
+article.ch h2{font-size:23px;margin:52px 0 16px;scroll-margin-top:84px;display:flex;align-items:baseline;gap:12px}
+.secnum{font:600 13px 'IBM Plex Mono';color:var(--gold);letter-spacing:.05em}
+article.ch h3{font-size:17.5px;margin:30px 0 10px}
+article.ch code{font:500 .82em 'IBM Plex Mono';background:var(--paper2);border:1px solid var(--hair);padding:1px 5px;border-radius:2px;color:var(--steel)}
+.gloss{border-bottom:1.5px dotted var(--steel);cursor:help;color:inherit;transition:color .15s}
+.gloss:hover{color:var(--steel);background:var(--steel-soft)}
+/* interpretation box */
+.interp{background:var(--paper2);border:1px solid var(--hair);border-left:3px solid var(--gold);padding:18px 24px 8px;margin:26px 0;border-radius:0 3px 3px 0}
+.interp .it{display:flex;align-items:center;gap:8px;font:600 9.5px 'IBM Plex Mono';letter-spacing:.16em;color:var(--gold);margin-bottom:10px}
+.interp .it svg{color:var(--gold)}
+.interp p{font-size:15.8px;color:var(--ink);line-height:1.7}
+/* under the hood */
+details.uth{border:1px solid var(--hair);border-radius:3px;margin:22px 0;background:var(--paper)}
+details.uth summary{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;list-style:none;transition:background .15s}
+details.uth summary::-webkit-details-marker{display:none}
+details.uth summary:hover{background:var(--paper2)}
+.uth-chip{font:600 8.5px 'IBM Plex Mono';letter-spacing:.14em;color:var(--gold);border:1px solid var(--gold);padding:3px 7px;border-radius:2px;white-space:nowrap}
+.uth-title{font-style:italic;color:var(--ink2);font-size:15px}
+.uth .chev{margin-left:auto;color:var(--ink3);transition:transform .25s}
+details.uth[open] .chev{transform:rotate(180deg)}
+.uth-body{padding:4px 22px 14px;border-top:1px solid var(--hair);font-size:15.5px}
+.uth-body p{margin:12px 0}
+/* playground */
+.pg{border:1px solid var(--hair2);border-radius:3px;margin:26px 0;overflow:hidden;background:var(--paper2)}
+.pg-top{display:flex;align-items:center;padding:9px 12px 9px 16px;border-bottom:1px solid var(--hair);background:var(--paper2)}
+.pg-file{display:inline-flex;align-items:center;gap:8px;font:500 11px 'IBM Plex Mono';color:var(--ink2);letter-spacing:.04em}
+.pg-file svg{color:var(--steel)}
+.pg-actions{margin-left:auto;display:flex;gap:8px}
+.pg-btn{display:inline-flex;align-items:center;gap:7px;font:600 10px 'IBM Plex Mono';letter-spacing:.1em;padding:7px 12px;border:1px solid var(--hair2);border-radius:2px;color:var(--ink2);transition:all .15s}
+.pg-btn:hover{border-color:var(--steel);color:var(--steel)}
+.pg-btn.run{border-color:var(--steel);color:var(--steel)}
+.pg-btn.run:hover{background:var(--steel);color:var(--paper)}
+.pg-ed{height:300px}
+.pg-ed .CodeMirror{height:100%}
+.pg-outwrap{background:var(--code-bg2);border-top:1px solid var(--code-line)}
+.pg-outhead{display:flex;align-items:center;gap:14px;font:600 9.5px 'IBM Plex Mono';letter-spacing:.15em;color:#5c7080;padding:9px 16px;border-bottom:1px solid var(--code-line)}
+.pg-live{display:inline-flex;align-items:center;gap:7px;color:#5c7080;font-weight:400;letter-spacing:.08em}
+.pg-live .pulse{background:var(--gold2)}
+.pg-console{margin:0;padding:14px 18px;font:400 12.5px/1.75 'IBM Plex Mono';color:#bccbd6;white-space:pre-wrap;word-break:break-word;max-height:190px;overflow:auto}
+.pg-console .cl-dim{color:#57718a}
+.pg-console .cl-warn{color:#c9a35a}
+.pg-console .cl-err{color:#dd9078}
+.pg-console .cl-head{color:#8ea9bd}
+.pg-viz{display:flex;flex-wrap:wrap;gap:14px;padding:14px 16px 16px;border-top:1px solid var(--code-line)}
+.bloch-wrap{width:158px;text-align:center}
+.bloch-wrap canvas{width:158px;height:150px;display:block}
+.bloch-cap{font:400 9px 'IBM Plex Mono';color:#5c7080;letter-spacing:.05em;margin-top:5px;line-height:1.6}
+.hist-wrap{flex:1 1 100%}
+.hist-wrap canvas{width:100%;height:150px;display:block}
+.pg-foot{font:400 9px 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink3);padding:9px 16px;border-top:1px solid var(--hair);background:var(--paper2)}
+/* CodeMirror theme */
+.cm-s-qmdark.CodeMirror{background:var(--code-bg);color:#c4d0da;font-family:'IBM Plex Mono';font-size:12.5px;line-height:1.6}
+.cm-s-qmdark .CodeMirror-gutters{background:var(--code-bg);border-right:1px solid var(--code-line)}
+.cm-s-qmdark .CodeMirror-linenumber{color:#3e4f5c}
+.cm-s-qmdark span.cm-keyword{color:#d2a54a}
+.cm-s-qmdark span.cm-def{color:#dfba6c}
+.cm-s-qmdark span.cm-builtin{color:#8fc1dd}
+.cm-s-qmdark span.cm-number{color:#8fc1dd}
+.cm-s-qmdark span.cm-string{color:#a9c58a}
+.cm-s-qmdark span.cm-comment{color:#556878;font-style:italic}
+.cm-s-qmdark span.cm-operator{color:#8ea4b5}
+.cm-s-qmdark span.cm-variable{color:#c4d0da}
+.cm-s-qmdark span.cm-variable-2{color:#aec3d0}
+.cm-s-qmdark span.cm-meta{color:#8fc1dd}
+.cm-s-qmdark .CodeMirror-cursor{border-left:2px solid #d2a54a}
+.cm-s-qmdark .CodeMirror-selected{background:#20303e}
+.cm-s-qmdark .CodeMirror-activeline-background{background:#131f29}
+.cm-s-qmdark .CodeMirror-matchingbracket{color:#e2bb60!important}
+/* diff widget */
+.diff{border:1px solid var(--hair2);border-radius:3px;margin:26px 0;background:var(--code-bg);overflow:hidden}
+.diff-head{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--code-line);flex-wrap:wrap}
+.diff-title{font:600 9.5px 'IBM Plex Mono';letter-spacing:.14em;color:#8ea9bd}
+.diff-tabs{margin-left:auto;display:flex;border:1px solid var(--code-line);border-radius:2px;overflow:hidden}
+.diff-tabs button{font:600 9.5px 'IBM Plex Mono';letter-spacing:.1em;padding:7px 14px;color:#5c7080;background:var(--code-bg);transition:all .2s}
+.diff-tabs button.on{background:var(--gold);color:#141a20}
+.diff-body{padding:10px 0 12px}
+.diff-line{display:flex;gap:0;font:400 12.5px/1.75 'IBM Plex Mono';color:#c4d0da;overflow-x:auto}
+.diff-line .dg{width:34px;flex:none;text-align:center;color:#44586a}
+.diff-line .dt{white-space:pre;padding-right:16px}
+.diff-line.plus .dg{color:var(--gold2)}
+.diff-line.minus .dg{color:#7495ad}
+.diff-line.plus .dt{background:rgba(210,165,74,.07)}
+.diff-line.minus .dt{opacity:.75}
+.diff-line.anim-out{animation:dOut .22s forwards}
+.diff-line.anim-in{animation:dIn .3s backwards}
+@keyframes dOut{to{opacity:0;transform:translateY(-5px)}}
+@keyframes dIn{from{opacity:0;transform:translateY(6px)}}
+.diff-note{font:400 11px/1.7 'IBM Plex Mono';color:#8ea9bd;padding:12px 18px;border-top:1px solid var(--code-line);font-style:italic}
+/* scaling widget */
+.scale{border:1px solid var(--hair2);border-radius:3px;background:var(--paper2);padding:24px 26px;margin:26px 0}
+.scale-top{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.scale-n{font:600 30px 'IBM Plex Mono';color:var(--steel)}
+.scale-lab{font:400 10px 'IBM Plex Mono';letter-spacing:.14em;color:var(--ink3)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--hair2);margin:24px 0 8px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--paper);border:2px solid var(--gold);cursor:grab}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--gold);cursor:grab}
+.scale-rows{margin-top:14px}
+.scale-r{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px dashed var(--hair);font:400 11px 'IBM Plex Mono';color:var(--ink2);flex-wrap:wrap}
+.scale-r b{color:var(--ink);font-weight:600}
+.scale-r .big{font-size:15px;color:var(--steel)}
+.scale-bar{position:relative;height:10px;margin:18px 0 4px;background:var(--paper);border:1px solid var(--hair);border-radius:2px}
+.scale-fill{position:absolute;inset:0 auto 0 0;background:var(--gold-soft);border-right:2px solid var(--gold);width:0%;transition:width .25s}
+.scale-mark{position:absolute;top:-7px;width:1.5px;height:24px;background:var(--steel)}
+.scale-mark span{position:absolute;top:26px;left:-40px;width:90px;font:400 8.5px 'IBM Plex Mono';color:var(--ink3);text-align:center;letter-spacing:.04em}
+.verdict{font-style:italic;color:var(--gold);font-size:16px;margin-top:14px}
+/* checkpoint */
+.cp{border:1px solid var(--hair2);border-radius:3px;margin:34px 0;padding:26px 30px;background:var(--paper2)}
+.cp-q{border:1px solid var(--hair);border-radius:3px;background:var(--paper);padding:20px 24px;margin:14px 0}
+.cp-q .cq-h{font:600 9.5px 'IBM Plex Mono';letter-spacing:.15em;color:var(--steel);margin-bottom:10px}
+.cp-q .cq-t{font-size:16.5px;line-height:1.65}
+.cp-q .cq-btn{margin-top:14px;font:600 10px 'IBM Plex Mono';letter-spacing:.1em;color:var(--gold);border:1px solid var(--gold);padding:8px 14px;border-radius:2px;transition:all .2s}
+.cp-q .cq-btn:hover{background:var(--gold-soft)}
+.cp-a{display:none;margin-top:16px;padding:14px 18px;background:var(--paper2);border-left:3px solid var(--gold);font-size:15.5px;border-radius:0 3px 3px 0}
+.cp-a.show{display:block;animation:dIn .35s}
+/* complete cta */
+.done-cta{border:1px solid var(--gold);background:var(--gold-soft);border-radius:3px;padding:30px;text-align:center;margin:40px 0}
+.done-cta h3{font-size:22px;margin-bottom:8px}
+.done-cta .d{color:var(--ink2);font-size:15.5px;margin-bottom:20px}
+/* comments */
+.comments{margin-top:56px;border-top:1px solid var(--hair);padding-top:26px}
+.composer{border:1px solid var(--hair);background:var(--paper2);border-radius:3px;padding:16px 18px;margin-bottom:26px}
+.composer textarea,.reply-box textarea{width:100%;min-height:74px;border:1px solid var(--hair);background:var(--paper);border-radius:2px;padding:12px 14px;font:400 14.5px 'Source Serif 4';color:var(--ink);resize:vertical;outline:none}
+.composer textarea:focus,.reply-box textarea:focus{border-color:var(--steel)}
+.composer .c-row{display:flex;align-items:center;gap:10px;margin-top:12px}
+.doubt-chip{display:inline-flex;align-items:center;gap:7px;font:600 9.5px 'IBM Plex Mono';letter-spacing:.12em;padding:8px 12px;border:1px solid var(--hair2);border-radius:2px;color:var(--ink2);transition:all .2s}
+.doubt-chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
+.cmt{padding:18px 4px;border-bottom:1px solid var(--hair)}
+.cmt .c-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.avat{width:30px;height:30px;border-radius:50%;background:var(--steel-soft);color:var(--steel);display:grid;place-items:center;font:600 11px 'IBM Plex Mono';border:1px solid var(--steel)}
+.avat.ta{background:var(--gold-soft);color:var(--gold);border-color:var(--gold)}
+.c-nm{font-weight:600;font-size:15px}
+.c-role{font:600 8px 'IBM Plex Mono';letter-spacing:.14em;color:var(--paper);background:var(--steel);padding:3px 6px;border-radius:2px}
+.c-role.ta{background:var(--gold)}
+.c-doubt{font:600 8px 'IBM Plex Mono';letter-spacing:.12em;color:var(--gold);border:1px solid var(--gold);padding:3px 6px;border-radius:2px}
+.c-when{font:400 9.5px 'IBM Plex Mono';color:var(--ink3);margin-left:auto}
+.cmt .c-body{margin:10px 0 0 40px;font-size:15.8px;line-height:1.68}
+.cmt .c-acts{display:flex;gap:16px;margin:10px 0 0 40px}
+.c-acts button{font:500 10px 'IBM Plex Mono';letter-spacing:.08em;color:var(--ink3);display:inline-flex;gap:6px;align-items:center;transition:color .15s}
+.c-acts button:hover{color:var(--steel)}
+.c-acts button.voted{color:var(--gold)}
+.replies{margin:14px 0 0 40px;border-left:2px solid var(--hair);padding-left:20px}
+.replies .cmt{border-bottom:none;padding:10px 0}
+.replies .c-body,.replies .c-acts{margin-left:40px}
+.reply-box{margin:12px 0 0 40px;display:none}
+.reply-box.open{display:block}
+/* locked chapter */
+.locked{max-width:660px;padding:60px 0;text-align:center}
+.locked .lk{width:58px;height:58px;border:1px solid var(--hair2);border-radius:50%;display:grid;place-items:center;margin:0 auto 20px;color:var(--ink3)}
+.locked h1{font-size:30px;margin:14px 0}
+.locked .ld{color:var(--ink2);font-size:17px;text-align:left}
+.locked ol{text-align:left;color:var(--ink2);margin:22px 0;padding-left:24px}
+.locked ol li{margin:8px 0}
+/* ============ tooltip / toast / modal ============ */
+#tip{position:fixed;z-index:300;max-width:300px;background:var(--paper2);border:1px solid var(--hair2);box-shadow:var(--shadow);border-radius:3px;padding:12px 15px;pointer-events:none;opacity:0;transition:opacity .15s;display:none}
+#tip.show{opacity:1}
+#tip .tt-term{font-weight:600;font-style:italic;font-size:15px}
+#tip .tt-tag{font:600 8px 'IBM Plex Mono';letter-spacing:.16em;color:var(--gold);margin:5px 0 6px}
+#tip .tt-body{font-size:13.8px;line-height:1.6;color:var(--ink)}
+#toasts{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:10px;align-items:center}
+.toast{background:var(--paper2);border:1px solid var(--hair2);border-left:3px solid var(--gold);box-shadow:var(--shadow);padding:13px 20px;font:400 12px 'IBM Plex Mono';color:var(--ink);border-radius:2px;animation:dIn .3s;max-width:520px;cursor:pointer}
+.modal-bg{position:fixed;inset:0;z-index:350;background:rgba(20,25,30,.55);display:grid;place-items:center;padding:20px;animation:dIn .25s}
+.modal{background:var(--paper);border:1px solid var(--hair2);border-radius:4px;max-width:640px;width:100%;max-height:86vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal .m-head{display:flex;align-items:center;padding:18px 24px;border-bottom:1px solid var(--hair);position:sticky;top:0;background:var(--paper)}
+.modal .m-head .kick{margin:0}
+.modal .m-close{margin-left:auto;color:var(--ink3)}
+.modal .m-close:hover{color:var(--steel)}
+.modal .m-body{padding:24px}
+.qz-code{background:var(--code-bg);color:#c4d0da;font:400 12.5px/1.7 'IBM Plex Mono';padding:14px 18px;border-radius:3px;overflow-x:auto;margin:16px 0;white-space:pre}
+.qz-opt{display:block;width:100%;text-align:left;border:1px solid var(--hair);border-radius:2px;padding:12px 16px;font:400 13px 'IBM Plex Mono';margin:8px 0;transition:all .15s;background:var(--paper2)}
+.qz-opt:hover{border-color:var(--steel)}
+.qz-opt.right{border-color:var(--gold);background:var(--gold-soft);color:var(--gold);font-weight:600}
+.qz-opt.wrong{border-color:var(--err);background:rgba(163,82,61,.08);color:var(--err);text-decoration:line-through}
+.gl-item{padding:13px 2px;border-bottom:1px solid var(--hair)}
+.gl-item .gt{font-weight:600;font-style:italic}
+.gl-item .ga{font-size:14.5px;color:var(--ink2);margin-top:3px}
+.gl-input{width:100%;border:1px solid var(--hair);background:var(--paper2);border-radius:2px;padding:11px 14px;font:400 13px 'IBM Plex Mono';color:var(--ink);outline:none;margin:14px 0}
+.gl-input:focus{border-color:var(--steel)}
+/* celebration */
+.cele{position:fixed;inset:0;z-index:500;display:grid;place-items:center;background:color-mix(in srgb,var(--paper) 62%,transparent);pointer-events:none;animation:celeFade 3.2s forwards}
+@keyframes celeFade{0%,78%{opacity:1}100%{opacity:0}}
+/* footer */
+footer{border-top:1px solid var(--hair);margin-top:60px}
+footer .wrap{padding:26px 30px 34px;font:400 10px 'IBM Plex Mono';letter-spacing:.1em;color:var(--ink3);display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--ink2)}
+/* responsive */
+@media (max-width:1020px){
+  .hero{grid-template-columns:1fr;gap:30px}
+  .ch-grid{grid-template-columns:1fr}
+  .ch-aside{position:static;border-bottom:1px solid var(--hair);padding-bottom:14px}
+  .feat{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .wrap{padding:0 18px}
+  .nav{display:none}
+  .week-row .wk-m{display:none}
+  .ch-row .ch-meta{display:none}
+}
+</style>
+</head>
+<body>
+
+<header id="site-head">
+  <div class="wrap">
+    <a href="#/" class="brand" style="text-decoration:none;color:inherit">
+      <svg width="23" height="23" viewBox="0 0 24 24" aria-hidden="true"><g stroke="currentColor" stroke-width="1.1" fill="none" opacity=".75"><path d="M5 5l7 7 7-7M5 19l7-7 7 7M12 5v14M5 12h14"/></g><circle cx="12" cy="12" r="2.6" fill="var(--gold)"/><circle cx="5" cy="5" r="1.5" fill="currentColor"/><circle cx="19" cy="5" r="1.5" fill="currentColor"/><circle cx="5" cy="19" r="1.5" fill="currentColor"/><circle cx="19" cy="19" r="1.5" fill="currentColor"/></svg>
+      <span>QuantumMet</span><small>β · MME</small>
+    </a>
+    <nav class="nav">
+      <a href="#/" data-nav="home">LIBRARY</a>
+      <a href="#/series/s1" data-nav="s1">SERIES 01</a>
+      <a href="#" id="nav-gloss">GLOSSARY</a>
+    </nav>
+    <div class="head-actions">
+      <button class="chip" id="head-prog" title="Your series progress"></button>
+      <button class="tbtn" id="theme-btn" aria-label="Toggle dim mode"></button>
+    </div>
+  </div>
+</header>
+<div id="ch-progress"></div>
+<div id="app"></div>
+<footer>
+  <div class="wrap">
+    <span>QUANTUMMET — A LAB MANUAL FOR THE QUANTUM-CURIOUS METALLURGIST</span>
+    <span>EVERYTHING RUNS LOCALLY IN YOUR BROWSER</span>
+    <a href="#/series/s1">SERIES 01</a><a href="#/">LIBRARY</a>
+  </div>
+</footer>
+<div id="tip" role="tooltip"></div>
+<div id="toasts"></div>
+<div id="modal-root"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script>
+/* ================================================================
+   QuantumMet — single-file educational platform
+   ================================================================ */
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const frag = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+/* ---------- icons ---------- */
+const IC = {
+  play:'<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
+  lock:'<rect x="5.5" y="10.5" width="13" height="9.5" rx="1.5"/><path d="M8.5 10.5V7a3.5 3.5 0 0 1 7 0v3.5"/>',
+  check:'<path d="M4.5 12.5l4.5 4.5L19.5 6.5"/>',
+  arrow:'<path d="M4 12h14m-5.5-5.5L18 12l-5.5 5.5"/>',
+  out:'<path d="M8 16L16 8M9.5 8H16v6.5"/>',
+  sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6L18 18M18 6l-1.4 1.4M7.4 16.6L6 18"/>',
+  moon:'<path d="M19 14.5A7.5 7.5 0 0 1 9.5 5 7.5 7.5 0 1 0 19 14.5z"/>',
+  clock:'<circle cx="12" cy="12" r="8.2"/><path d="M12 7.5V12l3 2.2"/>',
+  undo:'<path d="M4.5 5v5h5M4.8 13.5a7.8 7.8 0 1 0 1.9-8.1L4.5 7.6"/>',
+  chev:'<path d="M6.5 9.5l5.5 5.5 5.5-5.5"/>',
+  code:'<path d="M9 7.5L4.5 12 9 16.5M15 7.5L19.5 12 15 16.5"/>',
+  flask:'<path d="M10 4.5h4M11 4.5v4.8L5.8 17.6a2 2 0 0 0 1.7 3h9a2 2 0 0 0 1.7-3L13 9.3V4.5"/>',
+  comment:'<path d="M20 13.5a8 8 0 0 1-8 8H5l-1.5 1v-9a8 8 0 0 1 8-8h.5a8 8 0 0 1 8 8z"/>',
+  spark:'<path d="M12 4l1.7 4.8L18.5 10l-4.8 1.7L12 16.5l-1.7-4.8L5.5 10l4.8-1.2z"/>'
+};
+const icon = (n, s=15) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+/* ---------- theme ---------- */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  $('#theme-btn').innerHTML = icon(t==='light' ? 'moon' : 'sun');
+  try{ localStorage.setItem('qm_theme', t); }catch(e){}
+}
+(function(){
+  let t = 'light';
+  try{ t = localStorage.getItem('qm_theme') || 'light'; }catch(e){}
+  applyTheme(t);
+})();
+ $('#theme-btn').addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dim' : 'light');
+});
+
+/* ---------- persistent progress ---------- */
+let DONE = new Set();
+try{ DONE = new Set(JSON.parse(localStorage.getItem('qm_done') || '[]')); }catch(e){}
+function saveDone(){ try{ localStorage.setItem('qm_done', JSON.stringify([...DONE])); }catch(e){} }
+function headProgress(){
+  const total = 7, n = [...DONE].filter(id => id.startsWith('c')).length;
+  const b = $('#head-prog');
+  b.innerHTML = `<span class="dot"></span> SERIES 01 · ${n} / ${total}`;
+  b.onclick = () => { location.hash = '#/series/s1'; };
+}
+headProgress();
+let CUR_CH = 'c2';
+
+/* ---------- toast ---------- */
+function toast(msg){
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  $('#toasts').appendChild(t);
+  const kill = () => t.remove();
+  t.addEventListener('click', kill);
+  setTimeout(kill, 4200);
+}
+
+/* ================================================================
+   CONTENT DATA
+   ================================================================ */
+const GLOSS = {
+  qubit:['qubit','A two-state lattice site — like a site that is either occupied by an atom or vacant, but with bookkeeping that lets weights rotate instead of just sit.'],
+  superposition:['superposition','An α+β sample before it picks its equilibrium phase — the mixture is real, the resolution happens only when you look.'],
+  amplitude:['amplitude','Like a lever-rule weight, except it can be negative or complex — and weights with signs can cancel before you ever square them.'],
+  born:['Born rule','The lever rule for amplitudes: probability = |amplitude|². Square first, sum to one, read out statistically.'],
+  ket:['Dirac notation','A tidy label for a state vector. Read |β⟩ exactly as you would read “the β-phase state”.'],
+  unitary:['unitary gate','A symmetry operation acting on amplitudes — like a point-group rotation of a lattice: fully reversible, preserves all lengths.'],
+  bloch:['Bloch sphere','The orientation map of one two-level site — the same bookkeeping you would use for a magnetic moment direction on a lattice.'],
+  hamiltonian:['Hamiltonian','The energy bookkeeper — the quantum analogue of a Gibbs free-energy surface whose minimum sets the equilibrium state.'],
+  ground:['ground state','The T = 0 equilibrium phase: the lowest point of the energy landscape the Hamiltonian defines.'],
+  entangle:['entanglement','Two spins that correlate like neighbouring Ising moments — except more strongly than any shared history can explain.'],
+  anneal:['quantum annealing','Annealing with the thermal kick k·T swapped for a tunneling field Γ: escape metastable basins by leaking through, not hopping over.'],
+  interfere:['interference','Diffraction contrast in TEM — amplitudes add or cancel before they ever reach the detector as intensity.'],
+  statevector:['statevector','The full phase-constitution record: every amplitude for every configuration, before any measurement.'],
+  tensor:['tensor product','Combining two independent systems the way two sublattices combine: their state spaces multiply (2 → 4 → 8 …).'],
+  measure:['measurement','Quenching: the continuous equilibrium bookkeeping collapses to one definite microstructure the moment you observe it.'],
+  eigen:['eigenstate','A normal mode of the quantum system — like a discrete vibrational mode of atoms in a crystal, with a definite energy attached.']
+};
+
+const CHAP = {
+  c1:{ id:'c1', num:1, series:'s1', released:true, minutes:14,
+    title:'Why Quantum for Materials?', short:'The classical wall',
+    sub:'The many-electron Schrödinger equation, the DFT workhorse, and the exponential room no register will ever fill.',
+    mme:['Thermodynamics','Physical Metallurgy'], updated:'released this week',
+    sections:[ ['s11','1.1 One equation behind all of materials'],['s12','1.2 The exponential room'],['s13','1.3 DFT: the workhorse and its blind spots'],['s14','1.4 The quantum bet'],['s15','1.5 Metallurgy Checkpoint'] ] },
+  c2:{ id:'c2', num:2, series:'s1', released:true, minutes:22,
+    title:'Qubits & Superposition', short:'Qubits & superposition',
+    sub:'A two-phase sample in amplitude space: kets, the Born rule as a lever rule, the Bloch sphere, and the gate that changes everything.',
+    mme:['Physical Metallurgy','Thermodynamics'], updated:'released this week',
+    sections:[ ['s21','2.1 From a bit to a ket'],['s22','2.2 The Bloch sphere'],['s23','2.3 Gates as symmetry operations'],['s24','2.4 Interference'],['s25','2.5 Two qubits, two sites'],['s26','2.6 Metallurgy Checkpoint'],['s27','2.7 Where this goes'] ] },
+  c3:{ id:'c3', num:3, series:'s1', released:true, minutes:19,
+    title:'Entanglement & Measurement', short:'Entanglement & Ising',
+    sub:'Bell pairs in your browser, the Ising model as a Hamiltonian, and why measuring a state is a quench.',
+    mme:['Physical Metallurgy','Crystallography'], updated:'released this week',
+    sections:[ ['s31','3.1 Two sites, one state'],['s32','3.2 The Bell pair in your browser'],['s33','3.3 From Ising spins to a Hamiltonian'],['s34','3.4 Measurement is a quench'],['s35','3.5 Metallurgy Checkpoint'] ] },
+  c4:{ id:'c4', num:4, series:'s1', released:false, relDays:2, minutes:35,
+    title:'Quantum Annealing for Phase-Diagram & Stability Predictions', short:'Annealing · phase diagrams',
+    sub:'Map a phase-stability problem onto an Ising/QUBO landscape, replace k·T with a tunneling field Γ, and anneal your way to the stable assemblage.',
+    mme:['Thermodynamics','Physical Metallurgy'],
+    outline:['Cast a two-phase stability problem as an Ising Hamiltonian (energy penalties as couplings J).','Build an anneal schedule Γ(t) and watch basins get tunnelled through, not hopped over.','Compare annealed ground states against CALPHAD tie-lines — and learn where the analogy bends.'] },
+  c5:{ id:'c5', num:5, series:'s1', released:false, relDays:9, minutes:38,
+    title:'VQE: Ground-State Energies of Simple Alloys & Defects', short:'VQE · ground states',
+    sub:'The variational method you know from Thermo, run with a quantum ansatz: estimate defect formation energies without ever diagonalising the Hamiltonian.',
+    mme:['Thermodynamics','Physical Metallurgy'],
+    outline:['Why diagonalising Ĥ is the wall, and why ⟨ψ(θ)|Ĥ|ψ(θ)⟩ ≥ E₀ is your friend.','A parameterised ansatz circuit + classical optimiser = hybrid loop.','Estimate a defect-formation energy on the in-browser sandbox; read the error bars like a good experimentalist.'] },
+  c6:{ id:'c6', num:6, series:'s1', released:false, relDays:16, minutes:40,
+    title:'QAOA for Alloy Design & Process Optimization', short:'QAOA · alloy design',
+    sub:'Composition and scheduling as cost landscapes: QAOA layers alternate phase-cost and mixer rotations, approximating the optimum one layer at a time.',
+    mme:['Physical Metallurgy','Transport Phenomena','Crystallography'],
+    outline:['Pack an alloy-composition objective into a cost Hamiltonian (the Ch. 2 amplitude-encoding trick earns its keep).','QAOA p-layers: cost rotation, mixer rotation, repeat — and why more layers ≈ longer anneal.','Run a heat-treatment scheduling QUBO; compare against a classical baseline honestly.'] },
+  c7:{ id:'c7', num:7, series:'s1', released:false, relDays:23, minutes:50,
+    title:'Capstone: Hybrid Quantum–Classical Workflow on a Real Research Problem', short:'Capstone',
+    sub:'Everything, end to end: a literature-grounded materials problem, a quantum subroutine where it genuinely helps, and a classical wrapper where it does not.',
+    mme:['Thermodynamics','Transport Phenomena'],
+    outline:['Choose a problem from the defect-energetics / scheduling families (or bring your own).','Design the split: which bookkeeping belongs on amplitudes, which on bits.','Write the full loop, defend it in the chapter thread — TAs and peers vote on the best write-ups.'] }
+};
+
+const SERIES = {
+  s0:{ id:'s0', num:0, badge:'free', badgeText:'NO PREREQS',
+    title:'From NumPy to Qiskit', est:'4 CHAPTERS · ~3 H',
+    desc:'A four-chapter bridge for rusty Python: array shapes and broadcasting → complex numbers without fear → matrices as linear maps → your very first circuit. Take it alongside Chapters 1–2 if first-year math feels distant.',
+    chapters:[['Array shapes, indexing, broadcasting','25 MIN'],['Complex numbers as rotations','20 MIN'],['Matrices as linear maps','30 MIN'],['Your first circuit, line by line','25 MIN']] },
+  s1:{ id:'s1', num:1, badge:'free', badgeText:'NO PREREQS · SERIES 00 HELPFUL',
+    title:'Quantum Computing for Materials Engineers', est:'7 CHAPTERS · ~9 H',
+    desc:'The flagship drip course. The classical simulation wall → qubits and superposition → entanglement and Ising lattices → annealing for phase diagrams → VQE for ground states → QAOA for alloy design → a real hybrid capstone.',
+    chapters:null },
+  s2:{ id:'s2', num:2, badge:'need', badgeText:'NEEDS SERIES 01',
+    title:'Grover over Crystallographic Databases', est:'3 CHAPTERS · ~4 H',
+    desc:'A mini-series on searching space groups, Wyckoff positions and powder patterns quadratically faster — and an honest look at where the constant factors bite.',
+    chapters:[['Amplitude amplification, the honest version','45 MIN'],['A database oracle for structure types','50 MIN'],['When Grover actually wins','40 MIN']] },
+  s3:{ id:'s3', num:3, badge:'cap', badgeText:'CAPSTONE',
+    title:'Capstone Lab: Hybrid Workflows', est:'2 EXTENDED TRACKS',
+    desc:'Two research-grade workflows carried end to end: defect energetics with VQE plus classical relaxation, and process scheduling with QAOA plus CALPHAD constraints.',
+    chapters:[['Track A · Defect energetics, VQE + relaxation','6–8 H'],['Track B · Process scheduling, QAOA + CALPHAD','6–8 H']] }
+};
+
+/* release dates */
+function relDate(days){
+  const d = new Date(); d.setDate(d.getDate() + days);
+  return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+}
+CHAP.c4.rel = relDate(2); CHAP.c5.rel = relDate(9); CHAP.c6.rel = relDate(16); CHAP.c7.rel = relDate(23);
+
+/* ================================================================
+   CHAPTER PROSE
+   NOTE: every template literal that contains LaTeX backslashes is
+   tagged String.raw — nested plain literals would eat the backslashes.
+   ================================================================ */
+function interp(inner){
+  return `<aside class="interp"><div class="it">${icon('flask',13)} IN PLAIN METALLURGY</div>${inner}</aside>`;
+}
+function uth(title, body){
+  return `<details class="uth"><summary><span class="uth-chip">UNDER THE HOOD</span><span class="uth-title">${title}</span><svg class="ic chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">${IC.chev}</svg></summary><div class="uth-body">${body}</div></details>`;
+}
+const G = (k, label) => `<span class="gloss" data-g="${k}">${label}</span>`;
+
+function ch1HTML(){ return String.raw`
+<p class="lede">Before we touch a single qubit, we owe ourselves an honest answer to a blunt question: what exactly is broken in the classical simulation of materials — and how badly?</p>
+
+<h2 id="s11"><span class="secnum">1.1</span> One equation behind all of materials</h2>
+<p>Almost everything a metallurgist cares about — bonding, elastic moduli, defect energies, phase stability — is downstream of one equation. The time-independent Schrödinger equation for \(N\) interacting electrons reads</p>
+ $$\hat H\,\Psi(\mathbf r_1,\mathbf r_2,\dots,\mathbf r_N) \;=\; E\,\Psi(\mathbf r_1,\mathbf r_2,\dots,\mathbf r_N)$$ <p>Unpack it slowly, because every symbol earns its keep. \(\Psi\) (the wavefunction) is a single complex number assigned to <em>every configuration of all \(N\) electrons at once</em> — it is the electron bookkeeping of the whole crystal. \(\hat H\) (the Hamiltonian operator) is the energy bookkeeper: kinetic energies of every electron, plus every electron–nucleus and electron–electron Coulomb interaction. \(E\) is one of the allowed total energies — the system’s discrete list of “energy levels”, like the discrete vibrational modes of atoms in a crystal. The lowest of them, \(E_0\), is the <span class="gloss" data-g="ground">ground state</span> — the \(T=0\) equilibrium.</p>
+<p>One equation. One function \(\Psi\). The trouble is <em>where \(\Psi\) lives</em>.</p>
+
+<h2 id="s12"><span class="secnum">1.2</span> The exponential room</h2>
+<p>\(\Psi\) takes \(3N\) coordinates as input. Give each electron a laughably coarse grid of just 10 points per axis, and you must store one complex number for <em>every combination</em> of all \(3N\) coordinates:</p>
+ $$\#\text{numbers} \;=\; 10^{\,3N}$$ <p>Two electrons: a million numbers — a spreadsheet. Four: a trillion — a cluster. Ten electrons: \(10^{30}\) numbers, and no machine that will ever be built holds that. Drag the slider and watch the wall arrive:</p>
+<div class="scale-mount"></div>
+ ${interp(String.raw`<p>This is the same cliff you already know from configurational entropy — \(k\ln W\) grows fine, but you never <em>enumerate</em> the \(10^{23}\) microstates, you count them cleverly. The cruel difference: thermodynamics can coarse-grain because microstate <em>probabilities just add</em>. Wavefunction amplitudes carry <em>phases</em> and interfere; average them blindly and you destroy bonding itself. \(\Psi\) cannot be coarse-grained away — it must be carried, whole, or not at all.</p>`)}
+ ${uth('Why 2ⁿ and not n²? Degrees of freedom vs. configurations',
+  String.raw`<p>You are used to extensive bookkeeping: a 2-component phase diagram has 2 axes whether the sample is a gram or a kilogram. But \(\Psi\) is not a per-particle record — it is a record over <em>configurations</em>, and configurations multiply. Two independent systems \(A\), \(B\) combine by the tensor product: if \(A\) has \(d_A\) basis states and \(B\) has \(d_B\), the joint system has \(d_A \times d_B\). That multiplication — not addition — is the source of every exponential in this series.</p>`)}
+
+<h2 id="s13"><span class="secnum">1.3</span> DFT: the workhorse and its blind spots</h2>
+<p>Materials science runs on Density Functional Theory, and DFT is genuinely magnificent: it trades the many-electron \(\Psi\) for the electron <em>density</em> \(n(\mathbf r)\) — a function of 3 variables, whatever \(N\) is — plus a correction term called the exchange-correlation functional. Ground-state energies, lattice parameters, elastic constants: often within a few percent, at laptop scale.</p>
+<p>The exchange-correlation functional, however, is <em>approximate</em> — fitted and reasoned, not exact. And approximations have a fit range:</p>
+<ul>
+<li><strong>Strongly correlated systems</strong> — narrow \(d\)- and \(f\)-band oxides, Mott insulators — where electron–electron correlation dominates.</li>
+<li><strong>Excited states</strong> — band gaps, optical spectra — where the ground-state machinery is on thin ice.</li>
+<li><strong>Dilute defects and rare configurations</strong> — the objects of entire careers in physical metallurgy — where accuracy per electron matters enormously.</li>
+</ul>
+ ${interp(String.raw`<p>Think of the exchange-correlation functional as a <strong>regular-solution model</strong>: \(G = \sum x_i G_i + RT\sum x_i \ln x_i + \Omega x_1 x_2\). Superb inside the range where its \(\Omega\) was fitted; quietly wrong outside it, and you only find out by checking against an experiment you didn’t fit. DFT is the same bargain struck at the electron scale — which is precisely why an <em>exact</em> (if statistical) bookkeeper is interesting to metallurgists.</p>`)}
+<p>Quantum chemistry’s heavier hammers — coupled cluster, full configuration interaction — are more accurate precisely because they keep more of \(\Psi\), and they hit the \(10^{3N}\) wall correspondingly sooner. Accuracy and tractability trade off along exactly the axis the wall lives on.</p>
+
+<h2 id="s14"><span class="secnum">1.4</span> The quantum bet</h2>
+<p>Here is the wager the rest of this series cashes out. A register of \(n\) <span class="gloss" data-g="qubit">qubits</span> carries \(2^n\) complex amplitudes as its native state — for free. Thirty qubits already hold a billion amplitudes; three hundred hold more numbers than atoms in the universe. Nature, it turns out, was keeping this ledger all along; we are finally learning to write into it.</p>
+<p>Three honest footnotes before anyone oversells this to you:</p>
+<ol>
+<li>You cannot <em>read</em> the amplitudes out — measurement returns one random outcome. The art is arranging interference so the outcomes you sample are biased toward the answer you wanted.</li>
+<li>Today’s hardware is small and noisy. VQE, QAOA and annealing (Chapters 4–6) exist precisely because they are error-tolerant, variational, hybrid designs.</li>
+<li>Quantum computers will not replace DFT this decade. They will sit <em>inside</em> classical workflows, as specialised subroutines for the correlated, the combinatorial, the hard.</li>
+</ol>
+<p>The roadmap, then: <strong>Ch. 2</strong> builds the qubit, <strong>Ch. 3</strong> entangles spins into lattices, <strong>Ch. 4–6</strong> earn their materials paychecks, and <strong>Ch. 7</strong> assembles one honest hybrid workflow, end to end.</p>
+
+<h2 id="s15"><span class="secnum">1.5</span> Metallurgy Checkpoint</h2>
+<p>Three questions, connecting this chapter back to courses you have already passed. Reveal the model answer only after committing to your own:</p>
+<div class="cp-mount" data-cp="c1"></div>
+`;}
+
+function ch2HTML(){ return String.raw`
+<p class="lede">Last chapter we met the wall: \(10^{3N}\) numbers for \(N\) electrons, and no classical register that will ever hold them. Today we meet the one object that can — the ${G('qubit','qubit')} — and we build it out of something you already own: a two-state site on a lattice.</p>
+
+<h2 id="s21"><span class="secnum">2.1</span> From a bit to a ket</h2>
+<p>Take one lattice site in a substitutional alloy. At any instant it is occupied by an A atom or a B atom — two definite, mutually exclusive states. A classical bit models this perfectly: 0 or 1, never both, and a century of metallurgical computation was built on exactly that bookkeeping. It works — right up until you ask what the electrons <em>between</em> the sites are doing.</p>
+<p>To follow electrons, we need states with <em>weights</em> — weights that carry signs and phases. The notation is Dirac’s, and it is nothing more exotic than a tidy name for a column of numbers:</p>
+ $$|0\rangle = \begin{pmatrix}1\\0\end{pmatrix},\qquad |1\rangle = \begin{pmatrix}0\\1\end{pmatrix}$$ <p>Read \(|0\rangle\) the way you would read “the α-phase state”: as a ${G('ket','label for a vector')}. A general one-qubit state is a weighted sum — a ${G('superposition','superposition')}:</p>
+ $$|\psi\rangle \;=\; \alpha\,|0\rangle \;+\; \beta\,|1\rangle,\qquad |\alpha|^2 + |\beta|^2 = 1$$ <p>Here \(\alpha,\beta\in\mathbb{C}\) are the ${G('amplitude','amplitudes')}, and the constraint says the weights must square-and-sum to one. Measure the site, and you find 0 with probability \(|\alpha|^2\), 1 with probability \(|\beta|^2\) — the ${G('born','Born rule')}. That is the entire postulate. Everything else in this chapter is bookkeeping around it.</p>
+ ${interp(String.raw`<p><strong>You already run a version of this every week.</strong> On a binary tie-line, the lever rule fixes the phase fractions: \(f_\alpha + f_\beta = 1\), with each fraction read out statistically by point-counting a micrograph. The Born rule is the lever rule of amplitudes — square them, and they sum to one.</p><p><strong>The difference is the whole subject:</strong> lever-rule fractions are non-negative and merely add. Amplitudes can be negative or complex, so they can <em>cancel before you square them</em>. Fractions never interfere; amplitudes do. Keep that in your pocket until §2.4.</p>`)}
+ ${uth('Why must amplitudes be complex?',
+  String.raw`<p>Real two-component weights \((w_0, w_1)\) with \(w_0^2+w_1^2=1\) describe a point on a circle — and points on a circle naturally <em>rotate</em>. A rotation by angle \(\varphi\) acting on \((1,0)\) gives \((\cos\varphi, \sin\varphi)\); repeating it must stay smooth and reversible for every \(\varphi\), including the ones no measurement can distinguish. The minimal bookkeeping that lets a state “keep turning” while \(\sqrt{1-w^2}\) stays real is a phase factor \(e^{i\varphi}=\cos\varphi+i\sin\varphi\) — Euler’s formula — multiplying one amplitude. Complex numbers are not mysticism; they are the smallest ledger in which continuous, reversible rotation of weights is writable.</p>`)}
+
+<h2 id="s22"><span class="secnum">2.2</span> The Bloch sphere</h2>
+<p>Every normalized one-qubit state can be written as</p>
+ $$|\psi\rangle \;=\; \cos\tfrac{\theta}{2}\,|0\rangle \;+\; e^{i\varphi}\sin\tfrac{\theta}{2}\,|1\rangle$$ <p>Two angles, one unit sphere: the ${G('bloch','Bloch sphere')}. \(\theta\) says how much \(|1\rangle\) is mixed in (probabilities depend only on \(\theta\)); \(\varphi\) is a <em>phase</em> — a rotation in amplitude space that no single measurement of this basis can see, but which will decide interference in §2.4.</p>
+<p>You have met this geometry before, and not in a math course. In bcc iron, each Fe site carries a magnetic moment of about \(2.2\,\mu_B\) pointing somewhere. “A two-level system plus a direction” is exactly the bookkeeping a lattice of moments needs — which is why spin lattices (Chapter 3) are where materials physics and quantum computing first shook hands.</p>
+<p>Now the first payoff. Suppose a tie-line hands you \(f_\beta = 0.30\) and you want to <em>store that number</em>. One classical bit stores none of it. One qubit stores it to arbitrary resolution:</p>
+ $$\theta = 2\arcsin\sqrt{f_\beta}\quad\Longrightarrow\quad |\psi\rangle=\sqrt{0.70}\,|0\rangle+\sqrt{0.30}\,|1\rangle$$ <p>Run it. Edit the fraction. Watch the sphere.</p>
+<div class="pg-mount" data-pg="c2-ry"></div>
+ ${interp(String.raw`<p><strong>Reading a qubit is assaying.</strong> A single measurement is one random grain count — it tells you almost nothing. Many measurements converge on the lever-rule fraction with binomial error \(\sim 1/\sqrt{N}\) — precisely the statistics of point-counting phases on an optical micrograph. This trick, <em>amplitude encoding</em>, is how Chapter 6 will pack alloy compositions into a handful of qubits.</p>`)}
+
+<h2 id="s23"><span class="secnum">2.3</span> Gates as symmetry operations</h2>
+<p>In crystallography you already live among matrices that act on vectors and preserve length: the symmetry operations of a point group, whose inverses are also symmetries. A quantum gate is the same idea pointed at amplitudes. A gate is a ${G('unitary','unitary')} matrix \(U\) obeying</p>
+ $$U^\dagger U = \mathbb{I}$$ <p>where \(U^\dagger\) is the conjugate transpose — flip the sign of every imaginary part, then transpose. The three you will use most, on one qubit:</p>
+ $$X=\begin{pmatrix}0&1\\1&0\end{pmatrix}\;\;(\text{site swap}),\qquad Z=\begin{pmatrix}1&0\\0&-1\end{pmatrix}\;\;(\text{phase flip}),\qquad H=\tfrac{1}{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$$ <p>It is worth slowing down at \(H\), the <em>Hadamard</em>. Applied to \(|0\rangle\):</p>
+ $$H|0\rangle = \tfrac{1}{\sqrt2}\big(|0\rangle+|1\rangle\big) \;=\; |+\rangle$$ <p>— the equal ${G('superposition','superposition')}, the point on the Bloch equator you just built with \(R_y(\pi/2)\). And \(H\) applied <em>twice</em> returns \(|0\rangle\) exactly. Verify both in the sandbox — note the gold tick marks showing the exact Born probabilities against the sampled bar heights:</p>
+<div class="pg-mount" data-pg="c2-h"></div>
+ ${uth('Unitaries conserve probability — the proof, once',
+  String.raw`<p>Introduce the bra: \(\langle\psi| = (\alpha^*,\;\beta^*)\), the conjugate-transposed twin of the ket, so that \(\langle\psi|\psi\rangle = |\alpha|^2+|\beta|^2 = 1\). Then for any unitary,</p>
+  $$\|U|\psi\rangle\|^2 = \langle\psi|\,U^\dagger U\,|\psi\rangle = \langle\psi|\mathbb{I}|\psi\rangle = \langle\psi|\psi\rangle = 1.$$   <p>Norm in, norm out — total probability is conserved by <em>every</em> gate, exactly as a point-group operation conserves interatomic distances. This is also why quantum circuits are reversible while classical AND/OR gates are not: reversibility costs nothing here, because \(U^{-1}=U^\dagger\) always exists.</p>`)}
+
+<h2 id="s24"><span class="secnum">2.4</span> Interference</h2>
+<p>Flip a fair coin 1000 times and you get roughly 500/500 — and <em>nothing you do afterwards</em> changes that. The quantum version of the coin behaves differently. In the playground above, add a second <code>qc.h(0)</code> before <code>measure_all()</code>: the 50/50 becomes <strong>0 with certainty</strong>. Go on — type it. The histogram re-renders as you do.</p>
+<p>The ledger explains it. Two Hadamards in sequence:</p>
+ $$H\big(\tfrac{|0\rangle+|1\rangle}{\sqrt2}\big) = \tfrac{1}{2}\big(|0\rangle+|1\rangle\big)+\tfrac{1}{2}\big(|0\rangle-|1\rangle\big) = |0\rangle$$ <p>The two \(|1\rangle\) contributions arrive with <em>opposite signs</em> and cancel destructively; the \(|0\rangle\) contributions reinforce. A coin cannot do this because a coin stores <em>probabilities</em>, which are never negative. A qubit stores amplitudes — and ${G('interfere','interference')} happens before the square.</p>
+ ${interp(`<p><strong>You have stood inside this phenomenon.</strong> In TEM imaging, electrons scattered from neighbouring planes emerge as waves with amplitudes that add or cancel depending on phase — the Bragg condition. Diffraction contrast forms <em>before</em> intensity; the square happens only at the detector. A coin-flip computer squares at every step and thereby destroys interference forever. A quantum computer’s entire discipline is <strong>delaying the square to the very end</strong> — that, and nothing else, is what makes Chapter 1’s exponential ledger usable.</p>`)}
+<p>Here is the classical→quantum shift in one diff — click between them and watch the code morph:</p>
+<div class="diff-mount" data-diff="mc"></div>
+ ${uth('H·H = I, multiplied out in full',
+  String.raw`$$H^2 = \tfrac{1}{2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}\begin{pmatrix}1&1\\1&-1\end{pmatrix} = \tfrac{1}{2}\begin{pmatrix}1+1&1-1\\1-1&1+1\end{pmatrix} = \begin{pmatrix}1&0\\0&1\end{pmatrix}$$   <p>The off-diagonal zeros <em>are</em> the destructive interference — algebra and physics saying the same sentence. Note also \(H = H^\dagger\): Hadamard is its own inverse, like a mirror operation.</p>`)}
+
+<h2 id="s25"><span class="secnum">2.5</span> Two qubits, two sites</h2>
+<p>A two-site lattice needs a two-qubit register. Independent systems combine by the ${G('tensor','tensor product')} — the same way two sublattices combine — and dimensions <em>multiply</em>: 2 → 4 → \(2^n\). A general two-qubit ${G('statevector','statevector')} is</p>
+ $$|\psi\rangle = c_{00}|00\rangle + c_{01}|01\rangle + c_{10}|10\rangle + c_{11}|11\rangle,\qquad \sum |c_{ij}|^2 = 1$$ <p>If both sites are prepared independently — say each is our 70/30 site — the state factorises: \(\big(\sqrt{0.7}|0\rangle+\sqrt{0.3}|1\rangle\big)\otimes\big(\sqrt{0.7}|0\rangle+\sqrt{0.3}|1\rangle\big)\), giving amplitudes 0.49, 0.21, 0.21, 0.09. Now let a <em>CNOT</em> gate — “if the control is 1, flip the target” — couple the sites, and watch the histogram: sites that vote together:</p>
+<div class="pg-mount" data-pg="c2-two"></div>
+<p>Only \(|00\rangle\) and \(|11\rangle\) survive, 70/30. A CNOT on a classical bit is a plain conditional copy. A CNOT on a <em>superposed</em> control copies the undecided face — and the result, \(\sqrt{0.7}|00\rangle+\sqrt{0.3}|11\rangle\), refuses to factorise into any two single-site descriptions. That refusal is ${G('entangle','entanglement')}, and it is Chapter 3’s entire subject.</p>
+ ${interp(`<p><strong>Correlated microconstituents, with the history removed.</strong> A eutectoid colony’s lamellae always agree on orientation because of a shared transformation history — a classical correlation baked in at nucleation. The state \(\sqrt{0.7}|00\rangle+\sqrt{0.3}|11\rangle\) shows the same perfect agreement with <em>no shared variable anywhere</em> — the correlation lives in the pair, not in either site. Where the information physically resides, when neither site holds it, is the next chapter’s opening question.</p>`)}
+ ${uth('Four amplitudes, three constraints — what is actually free?',
+  String.raw`<p>Normalization removes one degree of freedom, and a global phase (multiplying all amplitudes by \(e^{i\chi}\)) changes nothing observable — two constraints on four complex numbers. A pure two-qubit state therefore has \(2\times 4 - 2 = 6\) real parameters; an <em>entangled</em> state needs all of them, while a product state needs only \(3+3\) and gives one back through normalization. The gap between “what the pair needs” and “what the parts can carry” is precisely the entanglement — Chapter 3 measures it with an entropy, exactly like configurational entropy in a two-phase field.</p>`)}
+
+<h2 id="s26"><span class="secnum">2.6</span> Metallurgy Checkpoint</h2>
+<p>Three questions tying this chapter to your core courses. Commit to your answer before revealing:</p>
+<div class="cp-mount" data-cp="c2"></div>
+
+<h2 id="s27"><span class="secnum">2.7</span> Where this goes</h2>
+<p>You can now write a state, store a number in an amplitude, rotate it with a gate, and — crucially — explain to a sceptical classmate why \(H\cdot H = I\) while no coin ever comes back. Chapter 3 asks the question this chapter kept deferring: when two sites hold a correlation that lives in <em>neither</em> of them, what exactly is carrying it — and what does an Ising lattice become when its spins are allowed to superpose?</p>
+`;}
+
+function ch3HTML(){ return String.raw`
+<p class="lede">Chapter 2 left us a deliberately uncomfortable object: \(\sqrt{0.7}\,|00\rangle+\sqrt{0.3}\,|11\rangle\) — two sites that agree, with no site holding the reason. This chapter makes correlation itself the object of study, then upgrades the Ising model you met in Physical Metallurgy into its quantum form.</p>
+
+<h2 id="s31"><span class="secnum">3.1</span> Two sites, one state</h2>
+<p>A product state factorises: \(|\psi\rangle = |\psi_A\rangle\otimes|\psi_B\rangle\). An ${G('entangle','entangled')} state is one that cannot, for <em>any</em> choice of single-site states. The test is algebraically painless: for \((a|0\rangle+b|1\rangle)\otimes(c|0\rangle+d|1\rangle)\), the amplitudes satisfy \(c_{00}c_{11} = c_{01}c_{10}\). For the Bell state</p>
+ $$|\Phi^+\rangle = \tfrac{1}{\sqrt2}\big(|00\rangle + |11\rangle\big)$$ <p>the left side is \(\tfrac{1}{2}\), the right side \(0\). No factorisation exists — not because we failed to find one, but because none is there to find.</p>
+ ${interp(`<p><strong>Ordering without communication.</strong> Two colonies of eutectoid in the same furnace agree on lamellar orientation because they share a history — same undercooling, same nucleation event. A Bell pair shows the same perfect agreement with <em>no shared variable at all</em>: the correlation is not written into either site. Bell’s theorem (Under the Hood) is the proof that no hidden shared history can fake it.</p>`)}
+<p>A Bell pair — the object you are about to build — takes two ordinary gates and produces something no pair of glued coins can imitate.</p>
+
+<h2 id="s32"><span class="secnum">3.2</span> The Bell pair in your browser</h2>
+<p>Two gates, in order. <code>h(0)</code> randomizes site 0 — puts it on the Bloch equator. <code>cx(0,1)</code> correlates site 1 with it. Run it, then look past the histogram at the two Bloch panels beneath:</p>
+<div class="pg-mount" data-pg="c3-bell"></div>
+<p>The histogram shows only \(00\) and \(11\): perfect correlation. The Bloch panels show something stranger — <strong>each qubit’s local arrow has vanished</strong>. Each site alone is maximally random; the pair as a whole is perfectly ordered. The information is not at either site. It is in the relationship.</p>
+ ${uth('Where did the local state go? Reduced density matrices (gently)',
+  String.raw`<p>To describe site 0 alone, you average the joint state over everything you refuse to know about site 1 — mathematically, the partial trace. For the Bell state this yields \(\rho_0 = \tfrac{1}{2}\mathbb{I}\): site 0’s local description is a <em>random coin</em> — Bloch vector length zero. Yet the joint state is pure. Locally random, jointly pure: that combination is impossible for any classical pair, glued coins included.</p>
+  <p>The quantitative check is CHSH: measure the pair along several rotated axes and a classical shared-variable model bounds the correlation score by 2; the Bell state scores \(2\sqrt2 \approx 2.83\). The experiment has been run — with photons, with superconducting qubits, with electrons in defect centres — and nature sides with the amplitudes every time.</p>`)}
+
+<h2 id="s33"><span class="secnum">3.3</span> From Ising spins to a Hamiltonian</h2>
+<p>You have met this in Physical Metallurgy as the order–disorder model behind β-brass (CuZn): sites carry \(s_i = \pm1\), and</p>
+ $$H_{\text{Ising}}(\mathbf s) = -J\sum_{\langle i,j\rangle} s_i s_j \;-\; h\sum_i s_i$$ <p>Above the ordering temperature, entropy wins and sites randomize; below, the coupling wins and order condenses — the Hamiltonian’s minimum is the equilibrium, exactly as a Gibbs surface’s minimum is. The quantum version makes two changes. First, the numbers \(s_i\) become <em>operators</em> — matrices acting on amplitudes, with eigenvalues \(\pm1\): \(\hat\sigma^{z}\) (measures a site) and \(\hat\sigma^{x}\) (rotates a site). Second, a new knob appears, the transverse field \(\Gamma\):</p>
+ $$\hat H = -J\sum_{\langle i,j\rangle} \hat\sigma_i^{z}\hat\sigma_j^{z} \;-\; \Gamma\sum_i \hat\sigma_i^{x}$$ <p>The ${G('hamiltonian','Hamiltonian')} \(\hat H\) is now an operator whose eigenvalues are the energies the lattice can hold; its lowest eigenvalue is the ${G('ground','ground state')} — the \(T=0\) equilibrium of the spin lattice. Each ${G('eigen','eigenstate')} is a normal mode of the coupled system, like the discrete vibrational modes of atoms in a crystal.</p>
+ ${interp(String.raw`<p><strong>Your histogram is a mini diffraction pattern.</strong> \(\langle \hat\sigma_i^{z}\hat\sigma_j^{z}\rangle\) — computable from measurement counts — is an order parameter: how often do neighbours agree? That is the same question a structure factor answers about site occupancies in neutron or X-ray scattering. Run the Bell circuit, read the counts as correlations, and you have measured the first entry of a spin pair’s “structure factor” by hand.</p>`)}
+<p>And \(\Gamma\)? It rotates each spin toward ${G('superposition','superposition')} — it is the quantum disordering knob, playing the role \(k_BT\) plays classically. Which sets up Chapter 4’s whole strategy: anneal <em>\(\Gamma\)</em> instead of temperature.</p>
+
+<h2 id="s34"><span class="secnum">3.4</span> Measurement is a quench</h2>
+<p>The final postulate, stated for a register. Measuring the ${G('statevector','statevector')} \(\sum_x c_x |x\rangle\) yields outcome \(x\) with probability \(|c_x|^2\), and the state collapses to \(|x\rangle\). Amplitudes — the continuous, phase-carrying equilibrium bookkeeping — are traded for one definite configuration.</p>
+ ${interp(`<p><strong>Measurement is a quench past the transus.</strong> Before: a sample whose α+β mixture is continuously evolving toward equilibrium. Quench: the sample freezes into <em>one</em> definite microstructure, drawn according to the statistics of the state that was there. Re-running the circuit re-prepares the ensemble — you get the statistics back, never the same grain. Every histogram in this series is thousands of re-preparations, which is also why Chapter 1 warned you can’t simply “read out” \(2^n\) amplitudes.</p>`)}
+ ${uth('Entanglement entropy — the configurational entropy of a pair',
+  String.raw`<p>Trace out one site of the pair and diagonalise what remains: \(\rho_0 = \sum_k \lambda_k |k\rangle\langle k|\). The entropy \(S = -\sum_k \lambda_k\log_2\lambda_k\) counts the bits of correlation held jointly but locally invisible. A product state gives \(S=0\); the Bell pair gives exactly \(S=1\) — one full bit. It is the tensor-product twin of configurational entropy: how many ways the <em>whole</em> can be arranged that its <em>parts</em> cannot account for.</p>`)}
+
+<h2 id="s35"><span class="secnum">3.5</span> Metallurgy Checkpoint</h2>
+<div class="cp-mount" data-cp="c3"></div>
+`;}
+
+const CHHTML = { c1:ch1HTML, c2:ch2HTML, c3:ch3HTML };
+
+/* ================================================================
+   KaTeX RENDERER — built-in walker (no auto-render dependency)
+   finds $$...$$ (display) and \(...\) (inline) in text nodes,
+   skipping script/style/pre/code/textarea.
+   ================================================================ */
+function renderMathEl(root){
+  if (!window.katex || !root) return;
+  const SKIP = {SCRIPT:1, STYLE:1, PRE:1, CODE:1, TEXTAREA:1};
+  let walker;
+  try{
+    walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(n){
+        const p = n.parentNode;
+        if (!p || SKIP[p.nodeName]) return NodeFilter.FILTER_REJECT;
+        return /(\$\$|\\\()/.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+  }catch(e){ return; }
+  const targets = [];
+  while (walker.nextNode()) targets.push(walker.currentNode);
+  targets.forEach(n => {
+    const s = n.nodeValue;
+    const re = /\$\$([\s\S]+?)\$\$|\\\(([\s\S]+?)\\\)/g;
+    let out = '', last = 0, m, hit = false;
+    while ((m = re.exec(s))){
+      hit = true;
+      out += esc(s.slice(last, m.index));
+      const display = (m[1] !== undefined);
+      const tex = (display ? m[1] : m[2]).trim();
+      try{ out += katex.renderToString(tex, { displayMode: display, throwOnError: false }); }
+      catch(e){ out += esc(m[0]); }
+      last = m.index + m[0].length;
+    }
+    if (!hit) return;
+    out += esc(s.slice(last));
+    const span = document.createElement('span');
+    span.innerHTML = out;
+    if (n.parentNode) n.parentNode.replaceChild(span, n);
+  });
+}
+
+/* ================================================================
+   CHECKPOINTS
+   ================================================================ */
+const CHECKPOINTS = {
+ c1:[
+  {course:'THERMODYNAMICS', q:'A substitutional solid solution has ~10²³ configurational microstates, yet a phase diagram needs only two axes. Why can’t the electron problem be coarse-grained the same way?',
+   a:'Because microstate probabilities only ever add — that is why Boltzmann counting works — but wavefunction amplitudes carry phases and interfere. Average Ψ carelessly and you destroy the interference, and with it bonding, band gaps and magnetism. Coarse-graining Ψ must be done by the Hamiltonian (i.e. by DFT’s approximations), not for free — hence the wall.'},
+  {course:'THERMODYNAMICS', q:'The exchange-correlation functional is fitted and excellent “inside its range”. Which thermo workhorse is the honest analogy — and when does the same warning bite?',
+   a:'The regular-solution model: G = ΣxᵢGᵢ + RTΣxᵢ ln xᵢ + Ωx₁x₂. Superb within the fitted Ω; quietly wrong for systems that demix, order or react. DFT’s xc-functional is the same bargain at the electron scale — trustworthy for weakly correlated ground states, unreliable for Mott insulators, strongly correlated d/f shells, dilute defects and excited states.'},
+  {course:'PHYSICAL METALLURGY', q:'2³⁰⁰ amplitudes outnumber the atoms in the universe — so how is a 300-qubit register not cheating? What do you actually get to read?',
+   a:'You never read the amplitudes. Measurement returns one n-bit outcome, sampled with Born probabilities, and collapses the state — owning a phase diagram, but each query yields one random microstructure. Quantum algorithms (Grover, VQE, QAOA in this series) are precisely the art of arranging interference so those samples are biased toward the answer.'}
+ ],
+ c2:[
+  {course:'THERMODYNAMICS', q:'A tie-line gives f_β = 0.30. The playground sets θ = 2·arcsin(√0.30) — a square root of the fraction. Why the square root, and which Thermo rule almost — but not quite — matches this bookkeeping?',
+   a:'The Born rule: probability = |amplitude|², so amplitude = √probability. The near-match is the lever rule — f_α + f_β = 1 exactly like |α|² + |β|² = 1, and both are read out statistically (point-counting a micrograph ≈ repeated measurement). The mismatch is the crucial part: fractions are non-negative and merely add; amplitudes can be negative or complex and cancel — §2.4’s entire subject.'},
+  {course:'PHYSICAL METALLURGY', q:'A crystal’s symmetry operations are reversible and preserve distances — the inverse of a rotation is a rotation. Name the exact analogue for quantum gates, write its condition, and state what it conserves.',
+   a:'Unitarity: U†U = 𝟙, with U† the conjugate transpose (flip every imaginary sign, then transpose). It conserves ⟨ψ|ψ⟩ = |α|² + |β|² = 1 — total probability, exactly as a point-group operation conserves interatomic distances. It is why quantum circuits are reversible and classical AND/OR gates are not.'},
+  {course:'PHYSICAL METALLURGY · TEM', q:'H·H = I: two Hadamards return |0⟩ exactly, though one Hadamard measures 50/50. Name the metallurgical phenomenon with the same structure, and identify what breaks if you “measure” halfway.',
+   a:'Electron diffraction in TEM/XRD: waves scattered from different planes interfere with their phases before the detector squares them into intensity. Measure (square) halfway and the interference vanishes — two independent intensities, no Bragg contrast. Squaring at the end, not at every step, is the whole discipline of a quantum algorithm.'}
+ ],
+ c3:[
+  {course:'PHYSICAL METALLURGY', q:'A lab partner calls the Bell pair “two glued coins that always land alike — a shared hidden variable”. Point at something already visible in the playground’s Bloch panels that strains that story.',
+   a:'Each qubit’s Bloch vector is exactly zero: each site alone is maximally random, so the correlation is stored in neither site — while glued coins hide their correlation inside each coin’s state. Fully ruling out hidden variables needs CHSH-style rotated bases (see Under the Hood), but the vanishing local arrow is the first, loudest clue.'},
+  {course:'PHYSICAL METALLURGY', q:'β-brass (CuZn) orders below ≈740 K. Which term of the Ising Hamiltonian encodes the ordering tendency, and what does raising the transverse field Γ do at fixed J — which thermo quantity does Γ behave like?',
+   a:'The coupling −J·σᵢσⱼ: ordering is the Hamiltonian finding its ground state, J’s sign set by whether like or unlike neighbours are favoured. Raising Γ mixes |0⟩/|1⟩ via σˣ and melts order — Γ behaves like k_BT, the disordering knob. But Γ’s disorder comes from superposition, not thermal jumps — exactly the difference Chapter 4 exploits.'},
+  {course:'TRANSPORT PHENOMENA', q:'Classical annealing escapes metastable basins via thermal kicks of size ~k_BT. What does Γ actually turn in the statevector, and why do people say it tunnels through barriers rather than over them?',
+   a:'Γ adds σˣ rotations — coherent mixing of |0⟩ and |1⟩. The state spreads through both basins in amplitude space and interferes; amplitude can leak through a barrier region where a Boltzmann hop would need an improbable high-energy excursion. Shrinking Γ slowly is the quantum cooling schedule — Chapter 4 does exactly that, with a phase diagram as the prize.'}
+ ]
+};
+
+/* ================================================================
+   PLAYGROUNDS (in-browser Qiskit-subset sandbox)
+   ================================================================ */
+const PLAYGROUNDS = {
+ 'c2-ry': { file:'amplitude_encoding.py', h:300, code:
+`from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+import numpy as np
+
+# A tie-line gives 30% beta phase. Store that fraction in one
+# qubit: probability = |amplitude|^2, so amplitude = sqrt(f).
+f_beta = 0.30
+theta  = 2 * np.arcsin(np.sqrt(f_beta))
+
+qc = QuantumCircuit(1)
+qc.ry(theta, 0)      # |psi> = sqrt(0.7)|0> + sqrt(0.3)|1>
+
+state = Statevector.from_instruction(qc)
+print(state)
+
+# Try f_beta = 0.5, then 1.0. Watch the Bloch arrow.` },
+ 'c2-h': { file:'hadamard_measure.py', h:290, code:
+`from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+
+qc = QuantumCircuit(1)
+qc.h(0)              # |0> -> (|0> + |1>)/sqrt(2)
+qc.measure_all()     # sample the superposition
+
+result = AerSimulator().run(qc, shots=1000).result()
+counts = result.get_counts()
+print(counts)
+
+# Now add a second qc.h(0) before measure_all():
+# amplitudes interfere and '0' comes back with certainty.` },
+ 'c2-two': { file:'two_sites.py', h:270, code:
+`from qiskit import QuantumCircuit
+import numpy as np
+
+f_beta = 0.30
+theta  = 2 * np.arcsin(np.sqrt(f_beta))
+
+qc = QuantumCircuit(2)
+qc.ry(theta, 0)      # site 0 carries the lever-rule statistics
+qc.cx(0, 1)          # correlate site 1 with site 0
+
+qc.measure_all()     # only 00 and 11 appear, ~70/30` },
+ 'c3-bell': { file:'bell_pair.py', h:250, code:
+`from qiskit import QuantumCircuit
+
+qc = QuantumCircuit(2)
+qc.h(0)              # randomize site 0
+qc.cx(0, 1)          # correlate site 1 with it
+
+qc.measure_all()
+# counts: only '00' and '11' -- never '01' or '10'.
+# And each Bloch arrow has vanished: look below.
+# Try adding qc.h(1) after the cx -- what changes?` }
+};
+
+/* ---------- complex + gates ---------- */
+const CM = (re, im=0) => ({re, im});
+const cAdd = (a,b) => CM(a.re+b.re, a.im+b.im);
+const cMul = (a,b) => CM(a.re*b.re - a.im*b.im, a.re*b.im + a.im*b.re);
+const NP = { pi:Math.PI, e:Math.E, sqrt:Math.sqrt, sin:Math.sin, cos:Math.cos, tan:Math.tan,
+  arcsin:Math.asin, arccos:Math.acos, arctan:Math.atan, exp:Math.exp, log:Math.log, abs:Math.abs };
+
+function evalPy(src, env){
+  const s = String(src).replace(/\b(?:np|math)\s*\.\s*/g, '__');
+  const keys = Object.keys(env || {});
+  const fn = new Function('__', ...keys, 'return (' + s + ');');
+  const v = fn(NP, ...keys.map(k => env[k]));
+  if (typeof v !== 'number' || !isFinite(v)) throw new Error('not a finite number');
+  return v;
+}
+const MATS = {
+  h:  () => [[CM(Math.SQRT1_2),CM(Math.SQRT1_2)],[CM(Math.SQRT1_2),CM(-Math.SQRT1_2)]],
+  x:  () => [[CM(0),CM(1)],[CM(1),CM(0)]],
+  y:  () => [[CM(0),CM(0,-1)],[CM(0,1),CM(0)]],
+  z:  () => [[CM(1),CM(0)],[CM(0),CM(-1)]],
+  s:  () => [[CM(1),CM(0)],[CM(0),CM(0,1)]],
+  t:  () => [[CM(1),CM(0)],[CM(0),CM(Math.SQRT1_2,Math.SQRT1_2)]],
+  rx: (t) => { const c=Math.cos(t/2), s=Math.sin(t/2); return [[CM(c),CM(0,-s)],[CM(0,-s),CM(c)]]; },
+  ry: (t) => { const c=Math.cos(t/2), s=Math.sin(t/2); return [[CM(c),CM(-s)],[CM(s),CM(c)]]; },
+  rz: (t) => { const c=Math.cos(t/2), s=Math.sin(t/2); return [[CM(c,-s),CM(0)],[CM(0),CM(c,s)]]; }
+};
+const ONE_G = ['h','x','y','z','s','t'];
+
+function applyU(psi, q, M){
+  const bit = 1<<q, out = psi.map(()=>CM(0));
+  for (let i=0;i<psi.length;i++){
+    if (i & bit) continue;
+    const j = i|bit, a = psi[i], b = psi[j];
+    out[i] = cAdd(cMul(M[0][0],a), cMul(M[0][1],b));
+    out[j] = cAdd(cMul(M[1][0],a), cMul(M[1][1],b));
+  }
+  return out;
+}
+function applyCX(psi, c, q){
+  const cb=1<<c, qb=1<<q, out = psi.slice();
+  for (let i=0;i<psi.length;i++){
+    if ((i & cb) && !(i & qb)){ const j = i|qb; out[j]=psi[i]; out[i]=psi[j]; }
+  }
+  return out;
+}
+function applyCZ(psi, c, q){
+  const cb=1<<c, qb=1<<q;
+  return psi.map((a,i)=> ((i&cb)&&(i&qb)) ? CM(-a.re,-a.im) : a);
+}
+function insert(r, q, a){ const low = r & ((1<<q)-1); return ((r-low)<<1) | (a<<q) | low; }
+function blochVec(psi, q){
+  let r01 = CM(0), r00 = CM(0), r11 = CM(0);
+  const R = psi.length>>1;
+  for (let r=0;r<R;r++){
+    const i0 = insert(r,q,0), i1 = insert(r,q,1);
+    const p0 = psi[i0], p1 = psi[i1];
+    r00 = cAdd(r00, cMul(p0, CM(p0.re,-p0.im)));
+    r11 = cAdd(r11, cMul(p1, CM(p1.re,-p1.im)));
+    r01 = cAdd(r01, cMul(p0, CM(p1.re,-p1.im)));
+  }
+  return { x: 2*r01.re, y: -2*r01.im, z: r00.re - r11.re };
+}
+
+function runQiskit(src){
+  const st = { n:0, hasCirc:false, ops:[], env:{}, shots:1024, measured:false, stateMode:false, prints:[], notes:[] };
+  const lines = String(src).split('\n');
+  lines.forEach((raw, idx) => {
+    let line = raw;
+    const h = line.indexOf('#'); if (h>=0) line = line.slice(0,h);
+    line = line.trim(); if (!line) return;
+    const ln = idx+1;
+    try{
+      if (/^(from|import)\b/.test(line)) return;
+      if (/Statevector\s*\.\s*from_instruction/.test(line)){ st.stateMode = true; if (/\bstate\b\s*=/.test(line)) st.env.state = 'Statevector'; return; }
+      if (/get_counts/.test(line)){ st.measured = true; return; }
+      if (/measure_all/.test(line)){ st.measured = true; return; }
+      if (/^\w+\s*\.\s*measure\s*\(/.test(line)){ st.measured = true; return; }
+      let m = line.match(/QuantumCircuit\s*\(\s*(\d+)/);
+      if (m){ st.hasCirc = true; st.n = Math.min(+m[1],4); if (+m[1] > 4) st.notes.push(`line ${ln}: capped at 4 qubits in the browser sandbox`); return; }
+      m = line.match(/shots\s*=\s*(\d+)/);
+      if (m){ st.shots = clamp(+m[1], 1, 20000); return; }
+      if (/^[A-Za-z_]\w*\s*=\s*.*(\.run\(|execute|AerSimulator|transpile|\.result\(\))/.test(line)) return;
+      m = line.match(/^([A-Za-z_]\w*)\s*\.\s*(\w+)\s*\(\s*(.*?)\s*\)$/);
+      if (m && st.hasCirc && m[1] === 'qc'){
+        const g = m[2];
+        const args = m[3] ? m[3].split(',').map(a => evalPy(a.trim(), st.env)) : [];
+        if (ONE_G.includes(g) && args.length===1){ st.ops.push({t:'u', q:args[0], m:MATS[g]()}); return; }
+        if (['rx','ry','rz'].includes(g) && args.length===2){ st.ops.push({t:'u', q:args[1], m:MATS[g](args[0])}); return; }
+        if (g==='cx' && args.length===2){ st.ops.push({t:'cx', c:args[0], q:args[1]}); return; }
+        if (g==='cz' && args.length===2){ st.ops.push({t:'cz', c:args[0], q:args[1]}); return; }
+        if (['barrier','draw','id'].includes(g)) return;
+        st.notes.push(`line ${ln}: gate "${g}(" not in the sandbox subset — skipped`);
+        return;
+      }
+      m = line.match(/^print\s*\(\s*(.*?)\s*\)$/);
+      if (m){
+        const a = m[1].trim();
+        if (/^(['"]).*\1$/.test(a)){ st.prints.push(a.slice(1,-1)); return; }
+        if (a==='state' || a==='counts' || a==='qc') return;
+        if (st.env[a] !== undefined){ st.prints.push(String(Math.round(st.env[a]*1e6)/1e6)); return; }
+        try{ st.prints.push(String(Math.round(evalPy(a, st.env)*1e6)/1e6)); }catch(e){ st.notes.push(`line ${ln}: print — ${e.message}`); }
+        return;
+      }
+      m = line.match(/^([A-Za-z_]\w*)\s*=\s*(.+)$/);
+      if (m){ st.env[m[1]] = evalPy(m[2], st.env); return; }
+      st.notes.push(`line ${ln}: skipped by the sandbox — "${line.slice(0,44)}"`);
+    }catch(e){
+      st.notes.push(`line ${ln}: ${e.message}`);
+    }
+  });
+  if (!st.hasCirc) st.notes.unshift('no QuantumCircuit(n) found — assuming 1 qubit');
+  if (st.n === 0) st.n = 1;
+  let psi = new Array(1<<st.n).fill(0).map(()=>CM(0)); psi[0] = CM(1);
+  for (const op of st.ops){
+    if (op.t==='u' && (op.q<0 || op.q>=st.n)) continue;
+    if ((op.t==='cx'||op.t==='cz') && (op.c>=st.n || op.q>=st.n)) continue;
+    psi = op.t==='u' ? applyU(psi, op.q, op.m) : op.t==='cx' ? applyCX(psi, op.c, op.q) : applyCZ(psi, op.c, op.q);
+  }
+  const probs = psi.map(a => a.re*a.re + a.im*a.im);
+  const bloches = [];
+  if (st.n <= 3) for (let q=0;q<st.n;q++) bloches.push(blochVec(psi, q));
+  let counts = null;
+  if (st.measured){
+    counts = {};
+    for (let s=0;s<st.shots;s++){
+      let r = Math.random(), acc = 0, idx = probs.length-1;
+      for (let i=0;i<probs.length;i++){ acc += probs[i]; if (r < acc){ idx = i; break; } }
+      const lab = idx.toString(2).padStart(st.n,'0');
+      counts[lab] = (counts[lab]||0)+1;
+    }
+  }
+  return { st, psi, probs, bloches, counts, n: st.n };
+}
+
+/* ---------- console + viz rendering ---------- */
+const fmtC = c => (Math.abs(c.im) < 5e-5) ? (c.re.toFixed(4)+'+0.j') : (c.re.toFixed(4)+(c.im<0?'-':'+')+Math.abs(c.im).toFixed(4)+'j');
+function renderConsole(res){
+  const L = [];
+  const n = res.n;
+  L.push(`<span class="cl-dim">· quantumet statevector sandbox — ${n} qubit${n>1?'s':''}${res.st.measured ? ' · '+res.st.shots+' shots' : ''}</span>`);
+  res.st.prints.forEach(t => L.push(esc(t)));
+  if (res.st.stateMode || !res.st.measured){
+    L.push(`<span class="cl-head">Statevector([${res.psi.map(fmtC).join(', ')}],</span>`);
+    L.push(`<span class="cl-head">            dims=(2,))</span>`);
+    const pl = res.probs.map((p,i)=>`P(|${i.toString(2).padStart(n,'0')}⟩)=${p.toFixed(4)}`).join('   ');
+    L.push(`<span class="cl-dim">${pl}</span>`);
+  }
+  if (res.counts){
+    const entries = Object.entries(res.counts).sort((a,b)=>b[1]-a[1]);
+    L.push(`<span class="cl-head">{${entries.map(([k,v])=>`'${k}': ${v}`).join(', ')}}</span>`);
+  }
+  res.st.notes.forEach(nt => L.push(`<span class="cl-warn">↳ ${esc(nt)}</span>`));
+  return L.map(l=>l+'\n').join('');
+}
+
+/* ---------- Bloch sphere (fixed dark viz palette) ---------- */
+const VIZ = { stroke:'#54708a', axis:'#3e566b', grid:'#2c3f4e', text:'#8fa5b5', arrow:'#d2a54a', arrow2:'#e2bb60' };
+const BLOCHS = [], HISTS = [];
+class Bloch {
+  constructor(cv, label){
+    this.cv = cv; this.ctx = cv.getContext('2d'); this.label = label;
+    this.rot = Math.random()*6.28; this.v = {x:0,y:0,z:1};
+    this.fit();
+  }
+  fit(){
+    const r = this.cv.getBoundingClientRect();
+    if (r.width < 5) return;
+    const d = window.devicePixelRatio || 1;
+    this.cv.width = Math.round(r.width*d); this.cv.height = Math.round(r.height*d);
+    this.ctx.setTransform(d,0,0,d,0,0);
+    this.w = r.width; this.h = r.height;
+    this.cx = r.width/2; this.cy = r.height/2 + 4; this.R = Math.min(r.width, r.height)/2 - 22;
+  }
+  proj(v){
+    const ca = Math.cos(this.rot), sa = Math.sin(this.rot);
+    const x = v.x*ca + v.z*sa, z = -v.x*sa + v.z*ca;
+    return { sx: this.cx + x*this.R, sy: this.cy - v.y*this.R, z };
+  }
+  draw(){
+    if (!this.w) this.fit(); if (!this.w) return;
+    this.rot += 0.0065;
+    const ctx = this.ctx, R = this.R;
+    ctx.clearRect(0,0,this.w,this.h);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = VIZ.stroke; ctx.beginPath(); ctx.arc(this.cx,this.cy,R,0,6.2832); ctx.stroke();
+    ctx.strokeStyle = VIZ.grid; ctx.setLineDash([3,3]); ctx.beginPath();
+    for (let i=0;i<=44;i++){
+      const a = i/44*6.2832, p = this.proj({x:Math.cos(a), y:0, z:Math.sin(a)});
+      i===0 ? ctx.moveTo(p.sx,p.sy) : ctx.lineTo(p.sx,p.sy);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = VIZ.axis; ctx.setLineDash([2,4]);
+    const pa = this.proj({x:1,y:0,z:0}), pb = this.proj({x:-1,y:0,z:0});
+    ctx.beginPath(); ctx.moveTo(pa.sx,pa.sy); ctx.lineTo(pb.sx,pb.sy); ctx.stroke();
+    const pc = this.proj({x:0,y:0,z:1}), pd = this.proj({x:0,y:0,z:-1});
+    ctx.beginPath(); ctx.moveTo(pc.sx,pc.sy); ctx.lineTo(pd.sx,pd.sy); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = VIZ.stroke; ctx.beginPath(); ctx.moveTo(this.cx,this.cy-R); ctx.lineTo(this.cx,this.cy+R); ctx.stroke();
+    ctx.fillStyle = VIZ.text; ctx.font = '9px "IBM Plex Mono"'; ctx.textAlign = 'center';
+    ctx.fillText('|0⟩', this.cx, this.cy-R-7); ctx.fillText('|1⟩', this.cx, this.cy+R+13);
+    ctx.textAlign = 'left'; ctx.fillText(this.label, 6, 13);
+    const len = Math.hypot(this.v.x, this.v.y, this.v.z);
+    if (len > 0.06){
+      const tip = this.proj(this.v);
+      const al = 0.55 + 0.45*(tip.z+1)/2;
+      ctx.strokeStyle = VIZ.arrow; ctx.globalAlpha = al; ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.moveTo(this.cx,this.cy); ctx.lineTo(tip.sx,tip.sy); ctx.stroke();
+      const dx = tip.sx-this.cx, dy = tip.sy-this.cy, dl = Math.hypot(dx,dy)||1;
+      const ux = dx/dl, uy = dy/dl;
+      ctx.fillStyle = VIZ.arrow2;
+      ctx.beginPath();
+      ctx.moveTo(tip.sx+ux*5, tip.sy+uy*5);
+      ctx.lineTo(tip.sx-uy*4-ux*3, tip.sy+ux*4-uy*3);
+      ctx.lineTo(tip.sx+uy*4-ux*3, tip.sy-ux*4-uy*3);
+      ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = VIZ.arrow; ctx.beginPath(); ctx.arc(this.cx,this.cy,3,0,6.2832); ctx.fill();
+      ctx.fillStyle = VIZ.text; ctx.font = 'italic 9px "Source Serif 4"';
+      ctx.textAlign = 'center'; ctx.fillText('no local arrow', this.cx, this.cy+R+14);
+      ctx.textAlign = 'left';
+    }
+  }
+}
+
+/* ---------- counts histogram ---------- */
+class Hist {
+  constructor(cv){ this.cv = cv; this.ctx = cv.getContext('2d'); this.t = 1; this.data = []; this.cur = []; this.fit(); }
+  fit(){
+    const r = this.cv.getBoundingClientRect(); if (r.width < 5) return;
+    const d = window.devicePixelRatio || 1;
+    this.cv.width = Math.round(r.width*d); this.cv.height = Math.round(r.height*d);
+    this.ctx.setTransform(d,0,0,d,0,0);
+    this.w = r.width; this.h = r.height;
+  }
+  set(counts, probs, shots){
+    const keys = new Set([...Object.keys(counts||{}), ...Object.keys(probs||{})]);
+    const labels = [...keys].sort();
+    this.data = labels.map(l => ({l, f:(counts&&counts[l]||0)/(shots||1), p:(probs&&probs[l]||0)}));
+    this.cur = this.data.map((_,i)=> this.cur[i]!==undefined ? this.cur[i] : 0);
+    this.t = 0;
+  }
+  step(){
+    if (this.t >= 1 || !this.w) return;
+    this.t = Math.min(1, this.t + 0.035);
+    const e = 1-Math.pow(1-this.t,3);
+    this.draw(e);
+  }
+  draw(e=1){
+    if (!this.w) return;
+    const ctx = this.ctx, W = this.w, H = this.h;
+    ctx.clearRect(0,0,W,H);
+    const n = this.data.length; if (!n) return;
+    const padL = 14, padB = 30, padT = 22;
+    const bw = Math.min(80, (W-padL-20)/n - 18);
+    const step = (W-padL-20)/n;
+    ctx.strokeStyle = VIZ.grid; ctx.beginPath(); ctx.moveTo(padL-6, H-padB); ctx.lineTo(W-8, H-padB); ctx.stroke();
+    for (let i=0;i<n;i++){
+      const d = this.data[i];
+      const target = d.f, cur = this.cur[i] + (target-this.cur[i])*e;
+      this.cur[i] = cur;
+      const x = padL + step*i + (step-bw)/2;
+      const bh = cur*(H-padB-padT);
+      ctx.fillStyle = '#4d7fa0';
+      ctx.fillRect(x, H-padB-bh, bw, bh);
+      const py = H-padB - d.p*(H-padB-padT);
+      ctx.strokeStyle = VIZ.arrow2; ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.moveTo(x-4, py); ctx.lineTo(x+bw+4, py); ctx.stroke(); ctx.lineWidth = 1;
+      ctx.fillStyle = VIZ.text; ctx.font = '10px "IBM Plex Mono"'; ctx.textAlign = 'center';
+      if (d.f > 0.004) ctx.fillText(String(Math.round(d.f*(this.shotsN||1))), x+bw/2, H-padB-bh-5);
+      ctx.fillText('|'+d.l+'⟩', x+bw/2, H-padB+16);
+    }
+    ctx.textAlign='left';
+  }
+}
+(function ticker(){
+  for (let i=BLOCHS.length-1;i>=0;i--){ const b=BLOCHS[i]; if(!b.cv.isConnected){BLOCHS.splice(i,1);continue;} b.draw(); }
+  for (let i=HISTS.length-1;i>=0;i--){ const h=HISTS[i]; if(!h.cv.isConnected){HISTS.splice(i,1);continue;} h.step(); }
+  requestAnimationFrame(ticker);
+})();
+window.addEventListener('resize', () => { BLOCHS.forEach(b=>{b.fit();b.draw();}); HISTS.forEach(h=>{h.fit();h.t=1;h.draw(1);}); });
+
+/* ---------- playground component ---------- */
+function mountPlayground(host, key){
+  const spec = PLAYGROUNDS[key];
+  host.innerHTML = `
+  <div class="pg">
+    <div class="pg-top">
+      <span class="pg-file">${icon('code',13)} ${spec.file}</span>
+      <span class="pg-actions">
+        <button class="pg-btn run" data-act="run">${icon('play',12)} RUN</button>
+        <button class="pg-btn" data-act="reset">${icon('undo',12)} RESET</button>
+      </span>
+    </div>
+    <div class="pg-ed" style="height:${spec.h||290}px"></div>
+    <div class="pg-outwrap">
+      <div class="pg-outhead">OUTPUT <span class="pg-live"><span class="pulse"></span> LIVE — UPDATES AS YOU TYPE</span></div>
+      <pre class="pg-console"></pre>
+      <div class="pg-viz"></div>
+    </div>
+    <div class="pg-foot">IN-BROWSER STATEVECTOR SIMULATOR · QISKIT SUBSET · ≤ 4 QUBITS · BLOCH ARROWS SHOW THE PRE-MEASUREMENT STATE</div>
+  </div>`;
+  const edHost = host.querySelector('.pg-ed');
+  let cm = null, ta = null;
+  if (window.CodeMirror){
+    cm = CodeMirror(edHost, { value: spec.code, mode:'python', lineNumbers:true, theme:'qmdark', indentUnit:4, scrollbarStyle:'native' });
+  } else {
+    ta = document.createElement('textarea');
+    ta.value = spec.code; ta.style.cssText = 'width:100%;height:100%;background:var(--code-bg);color:#c4d0da;border:none;outline:none;font:12.5px/1.6 "IBM Plex Mono";padding:12px;resize:vertical';
+    edHost.appendChild(ta);
+  }
+  const out = host.querySelector('.pg-console');
+  const viz = host.querySelector('.pg-viz');
+  function run(){
+    const res = runQiskit(cm ? cm.getValue() : ta.value);
+    out.innerHTML = renderConsole(res);
+    viz.innerHTML = '';
+    if (res.n <= 3 && res.st.ops.length > 0){
+      res.bloches.forEach((v,q) => {
+        const w = document.createElement('div'); w.className = 'bloch-wrap';
+        const cv = document.createElement('canvas');
+        const cap = document.createElement('div'); cap.className = 'bloch-cap';
+        const len = Math.hypot(v.x,v.y,v.z);
+        cap.textContent = len > 0.06 ? `|r| = ${len.toFixed(2)} · local state intact` : `|r| = 0.00 · entangled — no local arrow`;
+        w.appendChild(cv); w.appendChild(cap); viz.appendChild(w);
+        const b = new Bloch(cv, 'q'+q); b.v = v; BLOCHS.push(b); b.draw();
+      });
+    }
+    if (res.counts){
+      const w = document.createElement('div'); w.className = 'hist-wrap';
+      const cv = document.createElement('canvas');
+      const cap = document.createElement('div'); cap.className = 'bloch-cap';
+      cap.textContent = 'bar = measured frequency · gold tick = exact Born probability |ψ|² · ' + res.st.shots + ' shots';
+      w.appendChild(cv); w.appendChild(cap); viz.appendChild(w);
+      const h = new Hist(cv); h.shotsN = res.st.shots;
+      const probs = {}; res.probs.forEach((p,i)=>{ if (p>1e-4) probs[i.toString(2).padStart(res.n,'0')] = p; });
+      h.set(res.counts, probs, res.st.shots);
+      h.draw(1); HISTS.push(h);
+    }
+  }
+  let deb = null;
+  const onChange = () => { clearTimeout(deb); deb = setTimeout(run, 500); };
+  if (cm){ cm.on('change', onChange); cm.addKeyMap({'Ctrl-Enter':run}); }
+  else if (ta) ta.addEventListener('input', onChange);
+  host.querySelector('[data-act=run]').addEventListener('click', () => { clearTimeout(deb); run(); });
+  host.querySelector('[data-act=reset]').addEventListener('click', () => {
+    if (cm) cm.setValue(spec.code); else ta.value = spec.code;
+    run(); toast('Playground reset to the original snippet');
+  });
+  setTimeout(run, 350);
+}
+
+/* ================================================================
+   DIFF WIDGET
+   ================================================================ */
+const DIFFS = {
+ mc:{
+  title:'ESTIMATING A PHASE FRACTION — CLASSICAL vs QUANTUM',
+  noteA:'Random samples build the fraction statistically — error shrinks as 1/√N, and nothing about the estimate can ever interfere.',
+  noteQ:'The fraction is stored as an amplitude. Reading it still costs shots — but amplitudes carry phases, so they can cancel. No coin-flip estimate can.',
+  lines:[
+   {c:'# Classical: estimate a phase fraction by sampling', q:'# Quantum: the fraction IS an amplitude'},
+   {c:'import numpy as np', q:'from qiskit import QuantumCircuit'},
+   {c:'', q:'import numpy as np'},
+   {c:'N = 1000                      # samples', q:'f_beta = 0.30                 # from the tie-line'},
+   {c:'samples = np.random.choice(', q:'theta = 2*np.arcsin(np.sqrt(f_beta))'},
+   {c:'    ["alpha", "beta"], p=[0.7, 0.3], size=N)', q:''},
+   {c:'frac = np.mean(samples == "beta")', q:'qc = QuantumCircuit(1)'},
+   {c:'print(frac)   # 0.296, 0.304, 0.301 ...', q:'qc.ry(theta, 0)  # sqrt(0.7)|0> + sqrt(0.3)|1>'},
+   {c:'', q:'qc.measure_all() # read it back statistically'},
+   {c:'', q:''},
+   {c:'# estimates add. nothing cancels.', q:'# amplitudes can cancel. probabilities cannot.'},
+   {c:'# accuracy: 1/sqrt(N), always uphill.', q:'# that difference is the entire subject.'}
+  ]
+ }
+};
+function mountDiff(host, key){
+  const d = DIFFS[key];
+  let side = 'c';
+  host.innerHTML = `
+  <div class="diff">
+    <div class="diff-head">
+      <span class="diff-title">${d.title}</span>
+      <span class="diff-tabs">
+        <button data-side="c" class="on">CLASSICAL MONTE CARLO</button>
+        <button data-side="q">QUANTUM SUPERPOSITION</button>
+      </span>
+    </div>
+    <div class="diff-body"></div>
+    <div class="diff-note"></div>
+  </div>`;
+  const body = host.querySelector('.diff-body');
+  const note = host.querySelector('.diff-note');
+  function linesFor(s){
+    return d.lines.map(l => ({ text: (s==='c'?l.c:l.q) || '', kind: (l.c&&l.q)?'same':(l.q?'plus':'minus') }));
+  }
+  function render(anim){
+    const arr = linesFor(side);
+    body.innerHTML = arr.map((l,i) =>
+      `<div class="diff-line ${l.kind==='plus'?'plus':l.kind==='minus'?'minus':''} ${anim==='in'?'anim-in':''}" style="animation-delay:${i*16}ms"><span class="dg">${l.kind==='plus'?'+':l.kind==='minus'?'−':' '}</span><span class="dt">${esc(l.text)||' '}</span></div>`
+    ).join('');
+    note.textContent = side==='c' ? d.noteA : d.noteQ;
+  }
+  render();
+  host.querySelectorAll('.diff-tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = btn.dataset.side; if (s === side) return;
+      side = s;
+      host.querySelectorAll('.diff-tabs button').forEach(b => b.classList.toggle('on', b.dataset.side===side));
+      body.querySelectorAll('.diff-line').forEach((l,i) => { l.classList.remove('anim-in'); l.style.animationDelay = (i*14)+'ms'; l.classList.add('anim-out'); });
+      setTimeout(() => render('in'), 230);
+    });
+  });
+}
+
+/* ================================================================
+   CH1 SCALING WIDGET
+   ================================================================ */
+function mountScaling(host){
+  host.innerHTML = `
+  <div class="scale">
+    <div class="scale-top">
+      <span class="scale-n" id="sc-n">N = 4</span>
+      <span class="scale-lab">INTERACTING ELECTRONS (DRAG)</span>
+      <span class="scale-lab" style="margin-left:auto">GRID: 10 POINTS / AXIS / ELECTRON (BRUTALLY COARSE)</span>
+    </div>
+    <input type="range" min="1" max="16" value="4" id="sc-slider">
+    <div class="scale-rows">
+      <div class="scale-r"><span>Ψ coordinates (3N)</span><b id="sc-dim">12</b></div>
+      <div class="scale-r"><span>complex numbers to store</span><b class="big" id="sc-nums">10<sup>12</sup></b></div>
+      <div class="scale-r"><span>memory (16 B each)</span><b id="sc-mem">≈ 16 TB</b></div>
+      <div class="scale-r"><span>qubits that hold this natively</span><b id="sc-q">≈ 40</b></div>
+    </div>
+    <div class="scale-bar">
+      <div class="scale-fill" id="sc-fill"></div>
+      <div class="scale-mark" style="left:12%"><span>16 GB LAPTOP</span></div>
+      <div class="scale-mark" style="left:99%"><span>10<sup>80</sup> ATOMS</span></div>
+    </div>
+    <div class="verdict" id="sc-v"></div>
+  </div>`;
+  const sl = host.querySelector('#sc-slider');
+  const SI = { GB:1e9, TB:1e12, PB:1e15, EB:1e18 };
+  function fmtBytes(exp){
+    if (exp < 21){
+      const mult = Math.pow(10, exp), keys = Object.keys(SI);
+      let best = 'GB';
+      for (const k of keys){ if (SI[k] <= mult) best = k; }
+      const v = mult/SI[best];
+      return '≈ ' + (v >= 100 ? Math.round(v) : v.toFixed(1)) + ' ' + best;
+    }
+    return `10<sup>${Math.round(exp)}</sup> B`;
+  }
+  function upd(){
+    const N = +sl.value;
+    const exp = 3*N;
+    host.querySelector('#sc-n').textContent = 'N = ' + N;
+    host.querySelector('#sc-dim').textContent = 3*N;
+    host.querySelector('#sc-nums').innerHTML = `10<sup>${exp}</sup>`;
+    host.querySelector('#sc-mem').innerHTML = fmtBytes(exp + Math.log10(16));
+    host.querySelector('#sc-q').textContent = '≈ ' + 10*N;
+    host.querySelector('#sc-fill').style.width = clamp(exp/80*100, 2, 99) + '%';
+    const v = host.querySelector('#sc-v');
+    if (N <= 2) v.textContent = 'Fits in your laptop. Barely a warm-up.';
+    else if (N <= 4) v.textContent = 'A cluster job — hours of I/O to hold one wavefunction.';
+    else if (N <= 6) v.textContent = 'Beyond every supercomputer’s memory, combined.';
+    else if (N < 27) v.textContent = 'Beyond all digital storage humanity has ever built. The wall.';
+    else v.textContent = 'Beyond the atom count of the observable universe. (At N = 27: 10⁸¹ numbers vs 10⁸⁰ atoms.)';
+  }
+  sl.addEventListener('input', upd);
+  upd();
+}
+
+/* ================================================================
+   CHECKPOINT COMPONENT
+   ================================================================ */
+function mountCheckpoint(host, key){
+  const qs = CHECKPOINTS[key];
+  host.innerHTML = `
+  <div class="cp">
+    <div class="kick">${icon('check',13)} METALLURGY CHECKPOINT — 3 QUESTIONS</div>
+    ${qs.map((q,i)=>`
+    <div class="cp-q">
+      <div class="cq-h">Q${i+1} · ${q.course}</div>
+      <div class="cq-t">${q.q}</div>
+      <button class="cq-btn">REVEAL MODEL ANSWER</button>
+      <div class="cp-a">${q.a}</div>
+    </div>`).join('')}
+    <p style="font:400 10px 'IBM Plex Mono';letter-spacing:.1em;color:var(--ink3);margin:10px 0 0" id="cp-count">0 / 3 ANSWERS REVEALED</p>
+  </div>`;
+  let revealed = 0;
+  host.querySelectorAll('.cp-q').forEach(q => {
+    const btn = q.querySelector('.cq-btn'), a = q.querySelector('.cp-a');
+    btn.addEventListener('click', () => {
+      if (!a.classList.contains('show')){
+        a.classList.add('show'); btn.textContent = 'HIDE MODEL ANSWER'; revealed++;
+        host.querySelector('#cp-count').textContent = revealed + ' / 3 ANSWERS REVEALED' + (revealed===3 ? ' — CHECKPOINT LOGGED' : '');
+      } else {
+        a.classList.remove('show'); btn.textContent = 'REVEAL MODEL ANSWER'; revealed--;
+      }
+    });
+  });
+}
+
+/* ================================================================
+   COMMENTS
+   ================================================================ */
+const COMMENTS = {
+ c1:[
+  { id:1, author:'Meera J.', role:'student', when:'2 d ago', votes:6, doubt:false, text:'The 10-points-per-axis note deserves more emphasis — a real calculation needs 10⁶ points per axis. The wall in the widget is a lower bound on the wall.',
+    replies:[] }
+ ],
+ c2:[
+  { id:1, author:'Priya M.', role:'student', when:'2 d ago', votes:12, doubt:true, text:'I can see how |α|² works like the lever rule, but the lever rule comes from equal chemical potentials at the tie-line. Where do amplitudes physically come from — what is the “tie-line condition” for α and β?',
+    replies:[
+      { id:11, author:'Rahul (TA)', role:'ta', when:'1 d ago', votes:9, text:'Fantastic question, and the honest answer is: nothing fixes amplitudes inside a single qubit — they are whatever the preparation circuit sets. What fixes them physically is the Hamiltonian (Ch. 3): its ground state is the tie-line condition of quantum mechanics — the lowest-energy solution, exactly the way equilibrium at constant T, P minimises G. We will solve for exactly such states in Ch. 5 (VQE).' },
+      { id:12, author:'Priya M.', role:'student', when:'22 h ago', votes:4, text:'“Ground state = Gibbs minimum” — that one sentence finally made Chapter 5’s purpose click. Thank you!' }
+    ]},
+  { id:2, author:'Arjun T.', role:'student', when:'3 d ago', votes:5, doubt:false, text:'Try f_beta = 0.5 in the first playground and watch the Bloch arrow hit the equator, then 1.0 — it pins to |1⟩. Extremely satisfying with the slow sphere rotation.',
+    replies:[] },
+  { id:3, author:'Fatima S.', role:'student', when:'4 d ago', votes:3, doubt:false, text:'Mini request: can the Bloch spheres be draggable, so we can inspect the far side?',
+    replies:[ { id:31, author:'Rahul (TA)', role:'ta', when:'3 d ago', votes:2, text:'On the roadmap. For now they idle-rotate slowly so you can judge depth — watch the dashed equator sweep around.' } ]},
+  { id:4, author:'Dev K.', role:'student', when:'5 d ago', votes:4, doubt:true, text:'Does measuring destroy the superposition permanently? Can we ever get it back?',
+    replies:[ { id:41, author:'Rahul (TA)', role:'ta', when:'5 d ago', votes:6, text:'That measurement is destructive, yes — but the circuit is reusable: run it again on fresh |0⟩s. State preparation is cheap; that is why every histogram is thousands of re-preparations, not one sample worn out.' } ]}
+ ],
+ c3:[
+  { id:1, author:'Sanjana R.', role:'student', when:'1 d ago', votes:8, doubt:true, text:'If each qubit’s Bloch vector is zero, where is the information even stored?? The panel says “no local arrow” twice and I feel cheated.',
+    replies:[ { id:11, author:'Rahul (TA)', role:'ta', when:'20 h ago', votes:7, text:'In the correlations — the joint state. Individually there is nothing; jointly there is everything. It is like asking where the “structure” of a eutectic lives: not in either phase, but in the relationship between them. Mathematically: the partial trace throws away exactly the part that carried the order.' } ]}
+ ]
+};
+function mountComments(host, chId){
+  const list = COMMENTS[chId] || [];
+  let doubtMode = false;
+  function cmtHTML(c){
+    const av = `<span class="avat ${c.role==='ta'?'ta':''}">${esc(c.author.split(' ').map(w=>w[0]).join('').slice(0,2))}</span>`;
+    return `
+    <div class="cmt">
+      <div class="c-head">${av}<span class="c-nm">${esc(c.author)}</span>
+        ${c.role==='ta' ? '<span class="c-role ta">TA</span>' : ''}
+        ${c.doubt ? '<span class="c-doubt">ASK A DOUBT</span>' : ''}
+        <span class="c-when">${c.when}</span></div>
+      <div class="c-body">${esc(c.text)}</div>
+      <div class="c-acts">
+        <button data-vote="${c.id}" class="${c.voted?'voted':''}">${icon('spark',12)} ${c.votes}</button>
+        <button data-reply="${c.id}">${icon('comment',12)} REPLY</button>
+      </div>
+      <div class="reply-box" data-for="${c.id}">
+        <textarea placeholder="Reply…"></textarea>
+        <div class="c-row" style="margin-top:8px"><button class="btn" style="padding:8px 14px" data-rpost="${c.id}">REPLY</button></div>
+      </div>
+      ${c.replies.length ? `<div class="replies">${c.replies.map(r=>cmtHTML(r)).join('')}</div>` : ''}
+    </div>`;
+  }
+  function render(){
+    const sorted = [...list].sort((a,b) => (b.doubt-a.doubt) || (b.votes-a.votes));
+    host.innerHTML = `
+    <section class="comments">
+      <div class="sec-head"><h2 style="font-size:21px">Discussion</h2>
+        <span class="mono" style="font:400 10px 'IBM Plex Mono';letter-spacing:.1em;color:var(--ink3)">${list.length} THREADS · DOUBTS HOISTED FOR TA REPLY</span></div>
+      <div class="composer">
+        <textarea placeholder="Ask a doubt or share an insight — TAs reply to flagged doubts within 48 h…"></textarea>
+        <div class="c-row">
+          <button class="doubt-chip ${doubtMode?'on':''}" id="dchip">${icon('spark',12)} ASK A DOUBT</button>
+          <button class="btn" style="margin-left:auto;padding:9px 16px" id="cpost">POST</button>
+        </div>
+      </div>
+      <div class="c-list">${sorted.map(c => cmtHTML(c)).join('')}</div>
+    </section>`;
+    host.querySelector('#dchip').addEventListener('click', e => {
+      doubtMode = !doubtMode; e.currentTarget.classList.toggle('on', doubtMode);
+    });
+    host.querySelector('#cpost').addEventListener('click', () => {
+      const ta = host.querySelector('.composer textarea');
+      const txt = ta.value.trim();
+      if (!txt){ toast('Write something first — even “why is |0⟩ at the top?” counts.'); return; }
+      const wasDoubt = doubtMode;
+      list.unshift({ id:Date.now(), author:'You', role:'student', when:'now', votes:0, doubt:wasDoubt, text:txt, replies:[] });
+      doubtMode = false;
+      render();
+      toast(wasDoubt ? 'Doubt posted and flagged — a TA will be pinged.' : 'Comment posted.');
+    });
+    host.querySelectorAll('[data-vote]').forEach(b => b.addEventListener('click', () => {
+      const c = list.find(x => x.id == b.dataset.vote);
+      if (c){ c.voted = !c.voted; c.votes += c.voted ? 1 : -1; render(); }
+    }));
+    host.querySelectorAll('[data-reply]').forEach(b => b.addEventListener('click', () => {
+      const box = host.querySelector(`.reply-box[data-for="${b.dataset.reply}"]`);
+      if (box) box.classList.toggle('open');
+    }));
+    host.querySelectorAll('[data-rpost]').forEach(b => b.addEventListener('click', () => {
+      const box = host.querySelector(`.reply-box[data-for="${b.dataset.rpost}"]`);
+      const ta = box.querySelector('textarea');
+      const c = list.find(x => x.id == b.dataset.rpost);
+      if (c && ta.value.trim()){
+        c.replies.push({ id:Date.now(), author:'You', role:'student', when:'now', votes:0, text:ta.value.trim() });
+        render();
+      }
+    }));
+  }
+  render();
+}
+
+/* ================================================================
+   PREREQUISITE MAP
+   ================================================================ */
+const MAP_DATA = {
+  courses:[
+    { id:'math',   label:'FIRST-YEAR MATH',       blurb:'We assume: matrices multiply, complex numbers, dot products.' },
+    { id:'py',     label:'PYTHON + NUMPY',        blurb:'Arrays, shapes, indexing — that is all. Series 00 if rusty.' },
+    { id:'thermo', label:'THERMODYNAMICS',        blurb:'We assume: G(x,T), tie-lines, the lever rule, what a ground state means.' },
+    { id:'pm',     label:'PHYSICAL METALLURGY',   blurb:'We assume: phase transformations, microstructure, why annealing works.' },
+    { id:'xtal',   label:'CRYSTALLOGRAPHY',       blurb:'We assume: Bravais lattices, point-group symmetry, structure factors.' },
+    { id:'trans',  label:'TRANSPORT PHENOMENA',   blurb:'We assume: diffusion, driving forces, rate vs path.' }
+  ],
+  links:[ ['thermo','c1'],['math','c1'],
+          ['math','c2'],['py','c2'],['pm','c2'],
+          ['xtal','c3'],['pm','c3'],
+          ['thermo','c4'],['pm','c4'],
+          ['thermo','c5'],['py','c5'],
+          ['pm','c6'],['xtal','c6'],['trans','c6'],
+          ['thermo','c7'],['trans','c7'],['py','c7'] ]
+};
+function mountMap(host){
+  host.innerHTML = `<div class="map-scroll"><svg class="pmap" viewBox="0 0 940 410"></svg></div>
+  <div class="map-leg">HOVER A NODE TO TRACE ITS PREREQUISITES · CLICK A CHAPTER TO OPEN · CLICK A COURSE FOR WHAT WE ASSUME · DRAG NODES TO REARRANGE</div>`;
+  const svg = host.querySelector('svg');
+  const NS = 'http://www.w3.org/2000/svg';
+  const nodes = {};
+  MAP_DATA.courses.forEach((c,i) => {
+    nodes[c.id] = { id:c.id, type:'course', label:c.label, x:200, y:52+i*60, w:Math.max(120, c.label.length*7.2+26) };
+  });
+  Object.values(CHAP).forEach((c,i) => {
+    nodes[c.id] = { id:c.id, type:'chapter', ch:c, label:c.short, x:600, y:38+i*54, r:17 };
+  });
+  const edges = MAP_DATA.links.map(([f,t]) => ({f, t}));
+  function edgePath(e){
+    const a = nodes[e.f], b = nodes[e.t];
+    const x1 = a.type==='course' ? a.x + a.w/2 : a.x - a.r - 2;
+    const x2 = b.type==='course' ? b.x + b.w/2 : b.x - b.r - 2;
+    const y1 = a.y, y2 = b.y;
+    const dx = (x2-x1);
+    return `M ${x1} ${y1} C ${x1+dx*0.45} ${y1}, ${x2-dx*0.45} ${y2}, ${x2} ${y2}`;
+  }
+  edges.forEach(e => {
+    const p = document.createElementNS(NS,'path');
+    p.setAttribute('d', edgePath(e));
+    p.setAttribute('class','medge');
+    svg.appendChild(p); e.el = p;
+  });
+  Object.values(nodes).forEach(n => {
+    const g = document.createElementNS(NS,'g');
+    g.setAttribute('class', `mnode m${n.type==='course'?'course':'chap'} ${n.type==='chapter' ? (DONE.has(n.id)?'done':(n.ch.released?'live':'locked')) : ''}`);
+    g.dataset.id = n.id;
+    g.setAttribute('transform', `translate(${n.x},${n.y})`);
+    if (n.type==='course'){
+      const r = document.createElementNS(NS,'rect');
+      r.setAttribute('x', -n.w/2); r.setAttribute('y', -13); r.setAttribute('width', n.w); r.setAttribute('height', 26); r.setAttribute('rx', 13);
+      const t = document.createElementNS(NS,'text');
+      t.setAttribute('text-anchor','middle'); t.setAttribute('y', 3.5); t.textContent = n.label;
+      g.appendChild(r); g.appendChild(t);
+      g.dataset.tip = n.label + ' — ' + MAP_DATA.courses.find(c=>c.id===n.id).blurb;
+    } else {
+      const c = document.createElementNS(NS,'circle');
+      c.setAttribute('r', n.r);
+      const num = document.createElementNS(NS,'text');
+      num.setAttribute('text-anchor','middle'); num.setAttribute('y', 3.5); num.setAttribute('class','num');
+      num.textContent = n.ch.num;
+      const lab = document.createElementNS(NS,'text');
+      lab.setAttribute('x', 27); lab.setAttribute('y', 3.5);
+      lab.textContent = n.label + (n.ch.released ? '' : ' · ' + n.ch.rel);
+      g.appendChild(c); g.appendChild(num); g.appendChild(lab);
+      g.dataset.tip = `Ch ${n.ch.num} · ${n.ch.title} — ${DONE.has(n.id)?'completed':(n.ch.released?'live · '+n.ch.minutes+' min':'locked · releases '+n.ch.rel)}`;
+    }
+    svg.appendChild(g); n.el = g;
+    g.addEventListener('mouseenter', () => {
+      svg.classList.add('focusing');
+      const connected = new Set([n.id]);
+      edges.forEach(e => {
+        if (e.f===n.id || e.t===n.id){
+          e.el.classList.add('on'); connected.add(e.f); connected.add(e.t);
+        } else e.el.classList.remove('on');
+      });
+      Object.values(nodes).forEach(m => m.el.classList.toggle('on', connected.has(m.id)));
+    });
+    g.addEventListener('mouseleave', () => {
+      svg.classList.remove('focusing');
+      edges.forEach(e => e.el.classList.remove('on'));
+      Object.values(nodes).forEach(m => m.el.classList.remove('on'));
+    });
+    g.addEventListener('click', () => {
+      if (g.dataset.dragged) return;
+      if (n.type==='chapter'){
+        if (n.ch.released) location.hash = '#/chapter/' + n.id;
+        else toast(`Chapter ${n.ch.num} crystallizes on ${n.ch.rel} — the drip continues.`);
+      } else {
+        toast(n.label + ' — ' + MAP_DATA.courses.find(c=>c.id===n.id).blurb);
+      }
+    });
+    let drag = null;
+    g.addEventListener('pointerdown', e => {
+      drag = { x:e.clientX, y:e.clientY, ox:n.x, oy:n.y, moved:false };
+      try{ g.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    g.addEventListener('pointermove', e => {
+      if (!drag) return;
+      const sc = svg.getBoundingClientRect().width / 940;
+      n.x = drag.ox + (e.clientX-drag.x)/sc;
+      n.y = clamp(drag.oy + (e.clientY-drag.y)/sc, 20, 395);
+      if (Math.abs(e.clientX-drag.x) + Math.abs(e.clientY-drag.y) > 6) drag.moved = true;
+      g.dataset.dragged = drag.moved ? '1' : '';
+      g.setAttribute('transform', `translate(${n.x},${n.y})`);
+      edges.forEach(ed => { if (ed.f===n.id || ed.t===n.id) ed.el.setAttribute('d', edgePath(ed)); });
+    });
+    g.addEventListener('pointerup', () => { drag = null; setTimeout(()=>{ delete g.dataset.dragged; }, 60); });
+  });
+}
+
+/* ================================================================
+   CELEBRATION + CHIME
+   ================================================================ */
+function chime(){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ac = new AC();
+    if (ac.state === 'suspended') ac.resume();
+    const t = ac.currentTime;
+    [[659.25,0,0.10],[987.77,0.10,0.09],[1318.5,0.20,0.08],[1318.5*1.004,0.20,0.028]].forEach(([f,dt,g])=>{
+      const o = ac.createOscillator(), gn = ac.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      gn.gain.setValueAtTime(0.0001, t+dt);
+      gn.gain.exponentialRampToValueAtTime(g, t+dt+0.025);
+      gn.gain.exponentialRampToValueAtTime(0.0001, t+dt+1.25);
+      o.connect(gn); gn.connect(ac.destination);
+      o.start(t+dt); o.stop(t+dt+1.35);
+    });
+  }catch(e){}
+}
+function celebrate(){
+  const wrap = document.createElement('div');
+  wrap.className = 'cele';
+  const cv = document.createElement('canvas');
+  wrap.appendChild(cv);
+  document.body.appendChild(wrap);
+  const W = innerWidth, H = innerHeight, d = devicePixelRatio||1;
+  cv.width = W*d; cv.height = H*d; cv.style.width = W+'px'; cv.style.height = H+'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(d,0,0,d,0,0);
+  const gold = getComputedStyle(document.documentElement).getPropertyValue('--gold2').trim() || '#c2952b';
+  const cx = W/2, cy = H/2 - 20;
+  const sp = Math.min(56, W/14);
+  const pts = [];
+  for (let r=0;r<5;r++) for (let c=0;c<5;c++) pts.push({r, c, x:(c-2)*sp, y:(r-2)*sp, d: Math.hypot(c-2, r-2)*sp + Math.random()*20});
+  pts.sort((a,b)=>a.d-b.d);
+  const t0 = performance.now();
+  setTimeout(chime, 1100);
+  (function draw(now){
+    const t = now - t0;
+    ctx.clearRect(0,0,W,H);
+    ctx.save(); ctx.translate(cx, cy);
+    pts.forEach(p => {
+      const k = clamp((t - 60 - p.d*7)/350, 0, 1);
+      if (k <= 0) return;
+      ctx.strokeStyle = gold; ctx.globalAlpha = 0.35; ctx.lineWidth = 1;
+      pts.forEach(q => {
+        if ((q.c===p.c+1 && q.r===p.r) || (q.r===p.r+1 && q.c===p.c)){
+          const kq = clamp((t - 60 - q.d*7)/350, 0, 1);
+          if (kq > 0.4){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); }
+        }
+      });
+    });
+    pts.forEach(p => {
+      const k = clamp((t - p.d*7)/380, 0, 1);
+      if (k <= 0) return;
+      const c1 = 1.70158, c3 = c1+1;
+      const e = 1 + c3*Math.pow(k-1,3) + c1*Math.pow(k-1,2);
+      ctx.globalAlpha = 1; ctx.fillStyle = gold;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4.5*e, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = gold; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 8.5*e, 0, 6.2832); ctx.stroke();
+    });
+    const tc = t - 1050;
+    if (tc > 0){
+      const p = clamp(tc/500, 0, 1);
+      const L = 78;
+      ctx.globalAlpha = 1; ctx.strokeStyle = gold; ctx.lineWidth = 4.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.setLineDash([L]); ctx.lineDashOffset = L*(1-p);
+      const s = 1.15;
+      ctx.beginPath(); ctx.moveTo(-26*s, 2*s); ctx.lineTo(-8*s, 20*s); ctx.lineTo(28*s, -18*s); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.restore();
+    if (t < 3400) requestAnimationFrame(draw);
+    else wrap.remove();
+  })(t0);
+}
+function completeChapter(chId){
+  if (DONE.has(chId)) return;
+  DONE.add(chId); saveDone(); headProgress();
+  const ch = CHAP[chId];
+  toast(`Chapter ${ch.num} complete — a gold site crystallized into your lattice.`);
+  celebrate();
+  document.querySelectorAll('.side-check li').forEach(li => {
+    if (li.dataset.ch === chId) li.classList.add('done');
+  });
+  document.querySelectorAll('[data-chrow]').forEach(r => {
+    if (r.dataset.chrow === chId){ r.classList.remove('live'); r.classList.add('done'); }
+  });
+  const cta = document.querySelector('.done-cta .btn-gold');
+  if (cta){ cta.innerHTML = icon('check',13) + ' COMPLETED · GOLD TICK IN PLACE'; cta.disabled = true; }
+}
+
+/* ================================================================
+   TOOLTIP (glossary + generic data-tip)
+   ================================================================ */
+const tip = $('#tip');
+let tipOn = false;
+function hideTip(){
+  if (!tipOn) return;
+  tipOn = false;
+  tip.classList.remove('show');
+  setTimeout(()=>{ if(!tipOn) tip.style.display = 'none'; }, 180);
+}
+document.addEventListener('mouseover', e => {
+  const el = e.target.closest ? e.target.closest('.gloss,[data-tip]') : null;
+  if (el && el.classList.contains('gloss')){
+    const [term, analogy] = GLOSS[el.dataset.g] || ['',''];
+    tip.innerHTML = `<div class="tt-term">${esc(term)}</div><div class="tt-tag">MME ANALOGY</div><div class="tt-body">${esc(analogy)}</div>`;
+  } else if (el){
+    tip.innerHTML = `<div class="tt-body">${esc(el.dataset.tip)}</div>`;
+  } else { hideTip(); return; }
+  tip.style.display = 'block';
+  requestAnimationFrame(()=>tip.classList.add('show'));
+  tipOn = true;
+  placeTip(e);
+});
+document.addEventListener('mousemove', e => { if (tipOn) placeTip(e); });
+function placeTip(e){
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + 16, y = e.clientY + 18;
+  if (x + w > innerWidth - 12) x = e.clientX - w - 14;
+  if (y + h > innerHeight - 12) y = e.clientY - h - 14;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+
+/* ================================================================
+   MODALS
+   ================================================================ */
+let modalEsc = null;
+function openModal(html){
+  const root = $('#modal-root');
+  root.innerHTML = `<div class="modal-bg"><div class="modal">${html}</div></div>`;
+  const bg = root.querySelector('.modal-bg');
+  bg.addEventListener('click', e => { if (e.target === bg) closeModal(); });
+  root.querySelector('.m-close')?.addEventListener('click', closeModal);
+  modalEsc = e => { if (e.key === 'Escape') closeModal(); };
+  document.addEventListener('keydown', modalEsc);
+  return root.querySelector('.modal');
+}
+function closeModal(){
+  if (modalEsc){ document.removeEventListener('keydown', modalEsc); modalEsc = null; }
+  $('#modal-root').innerHTML = '';
+}
+
+const QUIZ = [
+  { q:'What does the shape of a NumPy array with 8 elements created by np.zeros(8) look like?',
+    code:'import numpy as np\n\na = np.zeros(8)\nprint(a.shape)',
+    opts:['(8,)','[8]','8','(1, 8)'], ans:0,
+    why:'A 1-D array in NumPy has shape (8,) — a tuple with one entry. It is not a row or a column yet; that distinction appears only at 2-D.' },
+  { q:'NumPy applies math element-wise. What prints here?',
+    code:'import numpy as np\n\na = np.array([4, 9])\nprint(np.sqrt(a))',
+    opts:['2.0 (it takes the first element)','[2. 3.]','an error — sqrt needs a scalar','[2, 3] as integers'], ans:1,
+    why:'ufuncs broadcast element-wise: √4 = 2.0 and √9 = 3.0, as floats. This is the exact habit amplitudes will reuse in Ch. 2.' },
+  { q:'Qiskit stores amplitudes as complex numbers. In Python, 1j*1j equals…',
+    code:'# try it in any python console\nprint(1j * 1j)',
+    opts:['1','1j','-1.0','(-1+0j) — same as -1.0'], ans:3,
+    why:'i·i = −1, and Python renders it as (-1+0j). If that feels fine, you are ready: we will treat complex numbers as rotations, never as mysteries.' }
+];
+function openQuiz(){
+  let i = 0, score = 0;
+  const m = openModal(`<div class="m-head"><span class="kick">PYTHON + QISKIT PREREQUISITE CHECK</span><button class="m-close tbtn">${icon('out',14)}</button></div><div class="m-body" id="qz"></div>`);
+  const body = m.querySelector('#qz');
+  function step(){
+    if (i >= QUIZ.length){
+      body.innerHTML = `
+        <p style="font-size:19px;font-weight:600;margin-bottom:8px">${score===3 ? 'You’re ready for Series 01.' : score===2 ? 'Ready — with one revision in your pocket.' : 'A short bridge is recommended.'}</p>
+        <p style="color:var(--ink2)">${score===3 ? 'All three correct. NumPy habits and complex numbers are exactly what Chapters 1–2 assume — nothing more.' : score===2 ? 'One slip, no problem. Skim Series 00 · Ch. 1–3 alongside Chapter 1 and you will glide.' : 'No shame — everyone starts here. Take Series 00 (4 short chapters, ~3 h) first, or in parallel with Chapter 1.'}</p>
+        <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+          <a class="btn btn-solid" href="#/chapter/c1" data-qz-go>${icon('arrow',13)} START CHAPTER 1</a>
+          <button class="btn" id="qz-retry">${icon('undo',13)} RETRY THE CHECK</button>
+        </div>`;
+      body.querySelector('#qz-retry').addEventListener('click', () => { i=0; score=0; step(); });
+      body.querySelector('[data-qz-go]').addEventListener('click', () => setTimeout(closeModal, 60));
+      return;
+    }
+    const Q = QUIZ[i];
+    let answered = false;
+    body.innerHTML = `
+      <p class="mono" style="font:600 10px 'IBM Plex Mono';letter-spacing:.14em;color:var(--ink3)">QUESTION ${i+1} OF ${QUIZ.length} · SCORE ${score}</p>
+      <p style="font-size:17.5px;font-weight:600;margin:8px 0 4px">${Q.q}</p>
+      <pre class="qz-code">${esc(Q.code)}</pre>
+      ${Q.opts.map((o,k)=>`<button class="qz-opt" data-k="${k}">${esc(o)}</button>`).join('')}
+      <div id="qz-why" style="display:none;margin-top:14px"><div class="interp" style="margin:0"><div class="it">${icon('flask',13)} WHY</div><p>${Q.why}</p></div>
+      <div style="margin-top:16px"><button class="btn btn-solid" id="qz-next">${icon('arrow',13)} NEXT</button></div></div>`;
+    body.querySelectorAll('.qz-opt').forEach(b => b.addEventListener('click', () => {
+      if (answered) return; answered = true;
+      const k = +b.dataset.k;
+      if (k === Q.ans){ b.classList.add('right'); score++; }
+      else { b.classList.add('wrong'); body.querySelector(`[data-k="${Q.ans}"]`).classList.add('right'); }
+      body.querySelector('#qz-why').style.display = 'block';
+    }));
+    body.querySelector('#qz-next')?.addEventListener('click', () => { i++; step(); });
+  }
+  step();
+}
+function openGlossary(){
+  const m = openModal(`<div class="m-head"><span class="kick">QUANTUM TERMS · METALLURGICAL GLOSSARY</span><button class="m-close tbtn">${icon('out',14)}</button></div>
+  <div class="m-body"><input class="gl-input" placeholder="filter terms…" id="gl-f"><div id="gl-list"></div></div>`);
+  const list = m.querySelector('#gl-list'), f = m.querySelector('#gl-f');
+  function render(){
+    const q = f.value.toLowerCase();
+    list.innerHTML = Object.entries(GLOSS).filter(([k]) => !q || k.includes(q) || GLOSS[k][1].toLowerCase().includes(q))
+      .map(([k,v]) => `<div class="gl-item"><div class="gt">${v[0]}</div><div class="ga">${v[1]}</div></div>`).join('') || '<p style="color:var(--ink3)">No matches.</p>';
+  }
+  f.addEventListener('input', render); render();
+}
+
+/* ================================================================
+   HERO LATTICE CANVAS (vacancy diffusion)
+   ================================================================ */
+function mountHeroLattice(cv){
+  const ctx = cv.getContext('2d');
+  let W, H, nodes = [], centers = [];
+  let vac = { c:2, r:2 }, vacFrom = null, hopT = 1, lastHop = 0;
+  let mouse = { x:-999, y:-999 };
+  function layout(){
+    const r = cv.getBoundingClientRect(); if (r.width < 5) return;
+    const dpr = devicePixelRatio||1;
+    cv.width = r.width*dpr; cv.height = r.height*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    W = r.width; H = r.height;
+    nodes = []; centers = [];
+    const cols = Math.max(3, Math.floor(W/52)), rows = Math.max(3, Math.floor(H/48));
+    const ox = (W - (cols-1)*52)/2, oy = (H - (rows-1)*48)/2;
+    for (let r0=0;r0<rows;r0++) for (let c0=0;c0<cols;c0++){
+      nodes.push({x:ox+c0*52, y:oy+r0*48, c:c0, r:r0, ph:Math.random()*6.28});
+      centers.push({x:ox+c0*52+26, y:oy+r0*48+24});
+    }
+    const mid = nodes[Math.floor(nodes.length/2)];
+    if (mid) vac = { c: mid.c, r: mid.r };
+    vacFrom = null; hopT = 1;
+  }
+  layout();
+  const onMove = e => { const r = cv.getBoundingClientRect(); mouse.x = e.clientX-r.left; mouse.y = e.clientY-r.top; };
+  const onLeave = () => { mouse.x = -999; mouse.y = -999; };
+  cv.addEventListener('mousemove', onMove); cv.addEventListener('mouseleave', onLeave);
+  function nodeAt(c,r){ return nodes.find(n => n.c===c && n.r===r); }
+  let run = true, last = performance.now();
+  (function loop(now){
+    if (!run || !cv.isConnected) return;
+    const dt = Math.min(50, now-last); last = now;
+    ctx.clearRect(0,0,W,H);
+    const steel = getComputedStyle(document.documentElement).getPropertyValue('--steel').trim();
+    const gold = getComputedStyle(document.documentElement).getPropertyValue('--gold2').trim();
+    ctx.strokeStyle = steel; ctx.globalAlpha = 0.16; ctx.lineWidth = 1;
+    nodes.forEach(n => {
+      centers.forEach(m => {
+        if (Math.abs(m.x-(n.x+26))<2 && Math.abs(m.y-(n.y+24))<2){
+          ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m.x,m.y); ctx.stroke();
+        }
+      });
+    });
+    ctx.globalAlpha = 1;
+    if (now - lastHop > 1500){
+      const opts = [[vac.c+1,vac.r],[vac.c-1,vac.r],[vac.c,vac.r+1],[vac.c,vac.r-1]].filter(([c,r]) => nodeAt(c,r));
+      const pick = opts[Math.floor(Math.random()*opts.length)];
+      if (pick){ vacFrom = {...vac}; vac = {c:pick[0], r:pick[1]}; hopT = 0; lastHop = now; }
+    }
+    hopT = Math.min(1, hopT + dt/420);
+    const hop = hopT<1 ? (1-Math.cos(hopT*Math.PI))/2 : 1;
+    const a = vacFrom ? nodeAt(vacFrom.c, vacFrom.r) : null, b = nodeAt(vac.c, vac.r);
+    const vx = a && b ? a.x + (b.x-a.x)*hop : (b ? b.x : 0);
+    const vy = a && b ? a.y + (b.y-a.y)*hop : (b ? b.y : 0);
+    if (a && hopT < 1){
+      ctx.strokeStyle = gold; ctx.globalAlpha = 0.5*(1-hopT);
+      ctx.beginPath(); ctx.arc(a.x, a.y, 6+8*hopT, 0, 6.2832); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    ctx.strokeStyle = gold; ctx.globalAlpha = 0.45;
+    centers.forEach(m => { if (Math.abs(m.x-(vx+26))<28 && Math.abs(m.y-(vy+24))<26){ ctx.beginPath(); ctx.moveTo(vx,vy); ctx.lineTo(m.x,m.y); ctx.stroke(); } });
+    ctx.globalAlpha = 1;
+    nodes.forEach(n => {
+      const near = Math.hypot(n.x-mouse.x, n.y-mouse.y) < 60;
+      ctx.fillStyle = steel; ctx.globalAlpha = near ? 0.95 : 0.55;
+      ctx.beginPath(); ctx.arc(n.x, n.y, near?3.6:2.8, 0, 6.2832); ctx.fill();
+      const ang = 0.32*Math.sin(now*0.0012 + n.ph);
+      const L = near ? 9 : 7;
+      ctx.strokeStyle = steel; ctx.lineWidth = 1.1; ctx.globalAlpha = near ? 0.9 : 0.4;
+      const x1 = n.x - Math.sin(ang)*L, y1 = n.y - Math.cos(ang)*L, x2 = n.x + Math.sin(ang)*L, y2 = n.y + Math.cos(ang)*L;
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2); ctx.lineTo(x2 - Math.sin(ang-0.5)*3.4, y2 - Math.cos(ang-0.5)*3.4);
+      ctx.lineTo(x2 - Math.sin(ang+0.5)*3.4, y2 - Math.cos(ang+0.5)*3.4);
+      ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+    centers.forEach(m => {
+      const near = Math.hypot(m.x-mouse.x, m.y-mouse.y) < 55;
+      ctx.fillStyle = steel; ctx.globalAlpha = near ? 0.85 : 0.35;
+      ctx.beginPath(); ctx.arc(m.x, m.y, 2.1, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1;
+    });
+    ctx.fillStyle = gold;
+    ctx.beginPath(); ctx.arc(vx, vy, 4.6, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = gold; ctx.setLineDash([3,3]); ctx.lineDashOffset = -now*0.02;
+    ctx.beginPath(); ctx.arc(vx, vy, 9.5, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+    requestAnimationFrame(loop);
+  })(last);
+  return { stop:()=>{ run=false; }, relayout:layout };
+}
+
+/* ================================================================
+   LATTICE BAND
+   ================================================================ */
+let bandUid = 0;
+function latticeBand(tight){
+  const id = 'lb' + (bandUid++);
+  return `<div class="latband${tight?' tight':''}" aria-hidden="true"><svg><defs><pattern id="${id}" width="28" height="28" patternUnits="userSpaceOnUse">
+    <path d="M0 14 L14 0 L28 14 L14 28 Z" fill="none" stroke="currentColor" stroke-width="1"/>
+    <circle cx="14" cy="14" r="1.8" fill="currentColor"/><circle cx="0" cy="14" r="1.4" fill="currentColor"/><circle cx="28" cy="14" r="1.4" fill="currentColor"/>
+  </pattern></defs><rect width="100%" height="28" fill="url(#${id})"/></svg></div>`;
+}
+
+/* ================================================================
+   VIEWS
+   ================================================================ */
+let cleanupFns = [];
+function onEv(target, ev, fn){ target.addEventListener(ev, fn); cleanupFns.push(()=>target.removeEventListener(ev, fn)); }
+
+function chapterNodesRow(el){
+  if (!el) return;
+  el.innerHTML = Object.values(CHAP).map((c,i) => {
+    const cls = DONE.has(c.id) ? 'done' : c.released ? 'live' : 'locked';
+    const tipTxt = `Ch ${c.num} · ${c.title}${c.released?'':' · releases '+c.rel}`;
+    const inner = DONE.has(c.id) ? icon('check',12) : String(c.num).padStart(2,'0');
+    return `<a class="lnode ${cls}" href="#/chapter/${c.id}" data-tip="${esc(tipTxt)}">${inner}</a>${i<6?'<span class="llink"></span>':''}`;
+  }).join('');
+}
+
+function viewHome(){
+  const doneN = [...DONE].filter(id=>id.startsWith('c')).length;
+  const el = frag(`
+  <div>
+    <section class="hero wrap">
+      <div>
+        <div class="kick">SERIES 01 · DRIP-RELEASED WEEKLY · FOR B.TECH MME</div>
+        <h1>Quantum computing, taught the way a <em class="accent">metallurgist</em> thinks.</h1>
+        <p class="sub">Seven chapters, from your first qubit to a hybrid quantum–classical workflow on a real materials problem. Every concept lands on ground you already own — phase diagrams, lever rules, lattices, annealing. Runnable Qiskit in every chapter; no quantum background assumed.</p>
+        <div class="cta">
+          <a class="btn btn-solid" href="#/chapter/${DONE.has('c1')?'c2':'c1'}">${icon('arrow',13)} BEGIN · CHAPTER ${DONE.has('c1')?'2':'1'}</a>
+          <button class="btn" id="hero-quiz">${icon('spark',13)} PYTHON + QISKIT PREREQUISITE CHECK</button>
+        </div>
+        <div class="meta-line">7 CHAPTERS · 4 RUNNABLE SANDBOXES TODAY · ASSUMES THERMO + CRYSTALLOGRAPHY, NOT LINEAR ALGEBRA</div>
+      </div>
+      <div class="hero-lat">
+        <canvas id="hero-cv"></canvas>
+        <div class="cap">A (100) PROJECTION OF A BCC LATTICE · THE GOLD SITE IS A POINT DEFECT HOPPING BETWEEN SITES — ITS NEIGHBOURS’ SPINS WOBBLE. CHAPTER 3 FORMALIZES EXACTLY WHAT THEY FEEL. HOVER TO INSPECT.</div>
+      </div>
+    </section>
+    <div class="wrap">${latticeBand()}</div>
+
+    <section class="wrap sec">
+      <div class="sec-head"><h2>Fresh from the drip</h2><span class="mono" style="font:400 10px 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink3)">NEW CHAPTERS THIS WEEK</span></div>
+      <a class="week-row" href="#/chapter/c3">
+        <span class="wk-tag"><span class="pulse"></span>LIVE</span>
+        <span><span class="wk-t">Ch 3 · Entanglement &amp; Measurement — spin lattices go quantum</span></span>
+        <span class="wk-m">19 MIN · RELEASED TUESDAY</span>
+      </a>
+      <a class="week-row" href="#/chapter/c2">
+        <span class="wk-tag"><span class="pulse"></span>LIVE</span>
+        <span><span class="wk-t">Ch 2 · Qubits &amp; Superposition — a two-phase sample in amplitude space</span></span>
+        <span class="wk-m">22 MIN · RELEASED MONDAY</span>
+      </a>
+      <div class="week-row" style="cursor:default">
+        <span class="wk-tag soon">${esc(CHAP.c4.rel.toUpperCase())}</span>
+        <span><span class="wk-t" style="color:var(--ink2)">Ch 4 · Quantum Annealing for Phase-Diagram &amp; Stability</span></span>
+        <span class="wk-m">PREREQ: CH 1–3</span>
+      </div>
+    </section>
+
+    <section class="wrap sec" style="padding-top:30px">
+      <div class="sec-head"><h2>The library</h2><span class="mono" style="font:400 10px 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink3)">TUTORIAL SERIES · COMPLETION &amp; DIFFICULTY</span></div>
+      <div class="feat">
+        <div>
+          <span class="badge b-free">NO PREREQS · SERIES 00 HELPFUL</span>
+          <h3><a href="#/series/s1">Series 01 · ${SERIES.s1.title}</a></h3>
+          <p class="fd">${SERIES.s1.desc}</p>
+          <div class="fm">7 CHAPTERS · ~9 H · UPDATED WEEKLY · ${doneN} / 7 COMPLETE</div>
+          <div class="prog-track"><div class="prog-fill" style="width:${doneN/7*100}%"></div></div>
+        </div>
+        <div class="nodes-row" id="home-nodes"></div>
+      </div>
+      ${['s0','s2','s3'].map(sid=>`
+      <a class="lib-row" href="#/series/${sid}">
+        <span class="lr-num">SERIES ${String(SERIES[sid].num).padStart(2,'0')}</span>
+        <span class="lr-main">
+          <span class="lr-t">${SERIES[sid].title}</span>
+          <div class="lr-m">${SERIES[sid].est} · ${SERIES[sid].desc.slice(0,86)}…</div>
+        </span>
+        <span class="lr-bar">
+          <span class="badge ${SERIES[sid].badge==='free'?'b-free':SERIES[sid].badge==='need'?'b-need':'b-cap'}">${SERIES[sid].badgeText}</span>
+          <span class="mini-track"><span class="mini-fill" style="width:0%"></span></span>
+          <span class="lr-pct">${sid==='s1' ? Math.round(doneN/7*100)+'%' : '0%'}</span>
+          ${icon('arrow',15)}
+        </span>
+      </a>`).join('')}
+    </section>
+
+    <div class="wrap">${latticeBand()}</div>
+
+    <section class="wrap sec" style="padding-bottom:20px">
+      <div class="sec-head"><h2>How every tutorial works</h2></div>
+      <div class="how-row"><span class="hn">01</span><span><div class="ht">Playgrounds that actually run</div><div class="hd">Every snippet executes in an in-browser statevector simulator — a Qiskit subset. Bloch spheres and count histograms re-render as you type; gold ticks mark the exact Born probabilities against your sampled bars.</div></span></div>
+      <div class="how-row"><span class="hn">02</span><span><div class="ht">Under the hood, optional</div><div class="hd">Rigorous derivations fold away behind every section — for the curious, never compulsory. New notation (kets, Hamiltonians, unitaries) is defined inline the first time it appears, always against a metallurgical anchor.</div></span></div>
+      <div class="how-row"><span class="hn">03</span><span><div class="ht">Metallurgy checkpoints</div><div class="hd">Three self-assessment questions close each chapter, each tied to a core MME course — Physical Metallurgy, Thermodynamics, Transport — with model answers you reveal only after committing to your own.</div></span></div>
+    </section>
+  </div>`);
+  onEv(el.querySelector('#hero-quiz'), 'click', openQuiz);
+  chapterNodesRow(el.querySelector('#home-nodes'));
+  return el;
+}
+
+function viewSeries(sid){
+  const s = SERIES[sid];
+  if (!s) return viewHome();
+  const doneN = [...DONE].filter(id=>id.startsWith('c')).length;
+  const isMain = sid === 's1';
+  const chapters = isMain ? Object.values(CHAP) : s.chapters.map(([t,m],i)=>({num:i+1, title:t, minutes:m}));
+  const el = frag(`
+  <div class="wrap">
+    <a class="crumb" href="#/">${icon('undo',13)} LIBRARY</a>
+    <div class="s-hero">
+      <div class="kick">SERIES ${String(s.num).padStart(2,'0')} · DRIP-RELEASED</div>
+      <h1>${s.title}</h1>
+      <p class="sd">${s.desc}</p>
+      <div class="sm">${s.est} · ${isMain ? '3 CHAPTERS LIVE · 4 QUEUED · EVERY CONCEPT ANCHORED TO AN MME COURSE' : 'OPENS WITH THE DRIP'}</div>
+    </div>
+    ${isMain ? `
+    <div class="s-prog">
+      <div class="sp-top">
+        <div class="kick" style="margin:0">YOUR LATTICE — ${doneN} / 7 SITES CRYSTALLIZED</div>
+        <span class="mono" style="font:500 10.5px 'IBM Plex Mono';color:var(--gold)">${Math.round(doneN/7*100)}% COMPLETE</span>
+      </div>
+      <div class="nodes-row" id="sp-nodes"></div>
+      <div class="prog-track"><div class="prog-fill" style="width:${doneN/7*100}%"></div></div>
+    </div>` : ''}
+    <section class="sec" style="padding-top:26px">
+      <div class="sec-head"><h2 style="font-size:22px">Chapters</h2><span class="mono" style="font:400 10px 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink3)">CHAPTERS DRIP IN READING ORDER</span></div>
+      ${chapters.map(c => {
+        const meta = isMain
+          ? `${c.minutes} MIN · MME: ${c.mme.join(' · ')} · ${c.released ? (DONE.has(c.id) ? 'COMPLETED' : 'LIVE — READ NOW') : 'RELEASES ' + c.rel.toUpperCase()}`
+          : `${c.minutes} · ${s.num===0 ? 'BRIDGE — OPEN WITH CH. 1' : 'QUEUED BEHIND SERIES 01'}`;
+        const cls = isMain ? (DONE.has(c.id) ? 'done' : c.released ? 'live' : 'locked') : 'locked';
+        const href = isMain ? `#/chapter/${c.id}` : '#/series/'+sid;
+        const st = cls==='done' ? icon('check',15) : cls==='live' ? icon('arrow',15) : icon('lock',15);
+        return `<a class="ch-row ${cls}" data-chrow="${isMain?c.id:''}" href="${href}">
+          <span class="ch-num">${String(c.num).padStart(2,'0')}</span>
+          <span class="ch-main"><span class="ch-title">${c.title}</span><div class="ch-meta">${meta}</div></span>
+          <span class="ch-st">${st}</span></a>`;
+      }).join('')}
+    </section>
+    <section class="sec" style="padding-top:34px">
+      <div class="sec-head"><h2 style="font-size:22px">Prerequisite map</h2><span class="mono" style="font:400 10px 'IBM Plex Mono';letter-spacing:.12em;color:var(--ink3)">${isMain ? 'MME COURSEWORK → CHAPTERS' : 'UNLOCKS AFTER SERIES 01'}</span></div>
+      <p style="color:var(--ink2);max-width:64ch">Which of your core courses each chapter leans on — hover a node to trace its edges, click a chapter circle to open it.</p>
+      <div class="map-mount"></div>
+    </section>
+  </div>`);
+  if (isMain){ chapterNodesRow(el.querySelector('#sp-nodes')); mountMap(el.querySelector('.map-mount')); }
+  else el.querySelector('.map-mount').innerHTML = `<div class="map-leg" style="border:1px solid var(--hair);padding:18px;background:var(--paper2)">This ${s.num===0?'bridge':'mini'} series unlocks alongside Series 01’s drip — the prerequisite map lives on the <a href="#/series/s1">Series 01 page</a>.</div>`;
+  return el;
+}
+
+function viewChapter(id){
+  const ch = CHAP[id];
+  if (!ch) return viewHome();
+  if (!ch.released) return viewLocked(ch);
+  CUR_CH = id;
+  $('#ch-progress').style.display = 'block';
+
+  const el = frag(`
+  <div class="wrap ch-grid">
+    <aside class="ch-aside">
+      <a class="crumb" style="padding:26px 0 0" href="#/series/s1">${icon('undo',12)} SERIES 01</a>
+      <div class="toc-h">ON THIS PAGE</div>
+      <nav class="toc-list" id="toc"></nav>
+      <div class="toc-h">SERIES 01 PROGRESS</div>
+      <ul class="side-check" id="side-check"></ul>
+      <div class="side-note"><b id="ch-pct">0%</b> READ · CHAPTER AUTO-COMPLETES AT 80% SCROLL</div>
+    </aside>
+    <article class="ch" id="ch-art">
+      <div class="kick">SERIES 01 · CHAPTER ${String(ch.num).padStart(2,'0')} OF 07</div>
+      <h1 style="font-size:clamp(1.7rem,3vw,2.3rem);margin:16px 0 10px">${ch.title}</h1>
+      <p style="color:var(--ink2);font-style:italic;font-size:17.5px;margin-bottom:14px">${ch.sub}</p>
+      <div class="mono" style="font:400 10px 'IBM Plex Mono';letter-spacing:.1em;color:var(--ink3);display:flex;gap:18px;flex-wrap:wrap">
+        <span>${icon('clock',12)} ${ch.minutes} MIN READ</span><span>MME: ${ch.mme.join(' · ')}</span><span>${ch.updated.toUpperCase()}</span>
+      </div>
+      <div style="margin-top:18px">${latticeBand(true)}</div>
+      <div id="ch-body"></div>
+    </article>
+  </div>`);
+  el.querySelector('#ch-body').innerHTML = CHHTML[id]();
+  const toc = el.querySelector('#toc');
+  ch.sections.forEach(([sid, label]) => {
+    const b = document.createElement('button');
+    b.className = 'toc-item'; b.dataset.t = sid;
+    b.innerHTML = `<span>${label}</span><span class="tdot"></span>`;
+    b.addEventListener('click', () => {
+      el.querySelector('#'+sid)?.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+    toc.appendChild(b);
+  });
+  const sc = el.querySelector('#side-check');
+  sc.innerHTML = Object.values(CHAP).map(c => `
+    <li data-ch="${c.id}" class="${DONE.has(c.id)?'done':''}">
+      <span class="box">${icon('check',9)}</span>
+      <span>CH ${c.num} · ${c.short.toUpperCase()}</span>
+    </li>`).join('');
+
+  const art = el.querySelector('#ch-art');
+  const pctEl = el.querySelector('#ch-pct');
+  const secEls = ch.sections.map(([sid]) => el.querySelector('#'+sid)).filter(Boolean);
+  let ticking = false;
+  function onScroll(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const r = art.getBoundingClientRect();
+      const total = art.offsetHeight - innerHeight;
+      const p = total > 200 ? clamp(-r.top/total, 0, 1) : 1;
+      pctEl.textContent = Math.round(p*100) + '%';
+      $('#ch-progress').style.width = (p*100) + '%';
+      secEls.forEach((s,i) => {
+        if (s.getBoundingClientRect().top < innerHeight*0.45){
+          toc.children[i]?.classList.add('passed');
+        }
+      });
+      if (p >= 0.8 && !DONE.has(id)) completeChapter(id);
+    });
+  }
+  onEv(window, 'scroll', onScroll, {passive:true});
+  setTimeout(onScroll, 300);
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting){
+        toc.querySelectorAll('.toc-item').forEach(t => t.classList.toggle('on', t.dataset.t === en.target.id));
+      }
+    });
+  }, { rootMargin:'-25% 0px -65% 0px' });
+  secEls.forEach(s => io.observe(s));
+  cleanupFns.push(()=>io.disconnect());
+
+  const body = el.querySelector('#ch-body');
+  const cta = document.createElement('div');
+  cta.className = 'done-cta';
+  const already = DONE.has(id);
+  cta.innerHTML = `
+    <h3>${already ? 'Chapter complete — gold tick in place.' : 'End of chapter — crystallize your tick.'}</h3>
+    <p class="d">${already ? 'This site of your lattice is filled. ' + (ch.num<3 ? 'The drip continues with Chapter '+(ch.num+1)+'.' : 'Chapter 4 arrives '+CHAP.c4.rel+'.') : 'Your progress lattice gains a gold site (or just scroll to 80% — we will notice). Chime included.'}</p>
+    <button class="btn btn-gold" ${already?'disabled':''} id="cta-btn">${already ? icon('check',13)+' COMPLETED · GOLD TICK IN PLACE' : icon('spark',13)+' MARK CHAPTER COMPLETE'}</button>`;
+  body.appendChild(cta);
+  cta.querySelector('#cta-btn')?.addEventListener('click', () => {
+    if (DONE.has(id)) return;
+    completeChapter(id);
+  });
+  const cm = document.createElement('div');
+  cm.className = 'comments-mount';
+  body.appendChild(cm);
+  return el;
+}
+
+function viewLocked(ch){
+  const el = frag(`
+  <div class="wrap locked">
+    <div class="kick" style="justify-content:center">SERIES 01 · CHAPTER ${String(ch.num).padStart(2,'0')} OF 07</div>
+    <div class="lk">${icon('lock',22)}</div>
+    <h1>${ch.title}</h1>
+    <p style="color:var(--gold);font:500 11px 'IBM Plex Mono';letter-spacing:.12em;margin:14px 0 22px">RELEASES ${ch.rel.toUpperCase()} · ${ch.minutes} MIN · DRIPPED WEEKLY</p>
+    <p class="ld">${ch.sub}</p>
+    <ol>${ch.outline.map(o=>`<li>${o}</li>`).join('')}</ol>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px">
+      <button class="btn btn-gold" id="notify">${icon('spark',13)} NOTIFY ME</button>
+      <a class="btn" href="#/chapter/c1">${icon('arrow',13)} READ CH 1 MEANWHILE</a>
+    </div>
+    <p style="margin-top:26px;font:400 10px 'IBM Plex Mono';letter-spacing:.1em;color:var(--ink3)">PREREQS: CHAPTERS 1–${ch.num-1} · ${ch.mme.join(' · ')}</p>
+  </div>`);
+  el.querySelector('#notify').addEventListener('click', () => {
+    toast(`Marked — Chapter ${ch.num} will arrive with a gold tick on ${ch.rel}.`);
+  });
+  return el;
+}
+
+/* ================================================================
+   ROUTER
+   ================================================================ */
+function mountAll(el){
+  el.querySelectorAll('.pg-mount').forEach(h => mountPlayground(h, h.dataset.pg));
+  el.querySelectorAll('.diff-mount').forEach(h => mountDiff(h, h.dataset.diff));
+  el.querySelectorAll('.scale-mount').forEach(h => mountScaling(h));
+  el.querySelectorAll('.cp-mount').forEach(h => mountCheckpoint(h, h.dataset.cp));
+  el.querySelectorAll('.comments-mount').forEach(h => mountComments(h, CUR_CH));
+  el.querySelectorAll('.hero-lat canvas').forEach(cv => {
+    const ctl = mountHeroLattice(cv);
+    cleanupFns.push(ctl.stop);
+    onEv(window, 'resize', ctl.relayout);
+  });
+}
+function setActiveNav(){
+  const h = location.hash;
+  document.querySelectorAll('[data-nav]').forEach(a => a.classList.remove('on'));
+  if (h.startsWith('#/series/s1')) document.querySelector('[data-nav="s1"]')?.classList.add('on');
+  else if (h === '#/' || h === '') document.querySelector('[data-nav="home"]')?.classList.add('on');
+}
+function route(){
+  cleanupFns.forEach(f => f()); cleanupFns = [];
+  closeModal();
+  hideTip();
+  $('#ch-progress').style.display = 'none';
+  $('#ch-progress').style.width = '0';
+  const hash = location.hash || '#/';
+  const parts = hash.replace(/^#\//,'').split('/').filter(Boolean);
+  let el;
+  if (parts[0] === 'chapter' && CHAP[parts[1]]) el = viewChapter(parts[1]);
+  else if (parts[0] === 'series') el = viewSeries(parts[1] || 's1');
+  else el = viewHome();
+  const app = $('#app');
+  app.innerHTML = ''; app.appendChild(el);
+  window.scrollTo(0,0);
+  mountAll(el);
+  try{ renderMathEl(el); }catch(e){}
+  setActiveNav();
+}
+window.addEventListener('hashchange', route);
+ $('#nav-gloss').addEventListener('click', e => { e.preventDefault(); openGlossary(); });
+route();
+</script>
+</body>
+</html>
