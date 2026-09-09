@@ -406,33 +406,6 @@ footer a{color:var(--ink2)}
 </style>
 </head>
 <body>
-<h2>Dynamic MathJax Example</h2>
-    <p>Click the button to load the equation dynamically. It will render immediately without refreshing the page.</p>
-    
-    <!-- Button to trigger dynamic loading -->
-    <button onclick="loadEquation()">Load Equation</button>
-
-    <!-- The container where the dynamic equation will be injected -->
-    <div id="equation-container" style="margin-top: 20px; font-size: 1.2em;"></div>
-
-    <script>
-        function loadEquation() {
-            const container = document.getElementById('equation-container');
-            
-            // 2. Inject the LaTeX dynamically. 
-            // Notice the double backslashes (\\) required inside JavaScript strings!
-            container.innerHTML = '$$\\hat H = -J\\sum_{\\langle i,j\\rangle} \\hat\\sigma_i^{z}\\hat\\sigma_j^{z} \\;-\\; \\Gamma\\sum_i \\hat\\sigma_i^{x}$$';
-
-            // 3. Tell MathJax to re-scan the container
-            if (window.MathJax) {
-                // typesetPromise takes an array of DOM elements to scan. 
-                // Passing the specific container is faster than scanning the whole page.
-                MathJax.typesetPromise([container]).then(() => {
-                    console.log('Equation rendered successfully!');
-                }).catch((err) => console.log('Typeset failed: ' + err.message));
-            }
-        }
-    </script>
 <header id="site-head">
   <div class="wrap">
     <a href="#/" class="brand" style="text-decoration:none;color:inherit">
